@@ -43,10 +43,13 @@ void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* thisScript, void* e
 	newY += CheckPatternForMovePosition(origModel, x, y, z).y;
 	newZ += CheckPatternForMovePosition(origModel, x, y, z).z;
 
-	// Set the new position
-	CTheScripts::ScriptParams[1].fParam = newX;
-	CTheScripts::ScriptParams[2].fParam = newY;
-	CTheScripts::ScriptParams[3].fParam = newZ;
+	if (!DoCoordinatesMatch(newX, newY, newZ, x, y, z))
+	{
+		// Set the new position
+		CTheScripts::ScriptParams[1].fParam = newX;
+		CTheScripts::ScriptParams[2].fParam = newY;
+		CTheScripts::ScriptParams[3].fParam = newZ;
+	}
 
 	// Added Alloy Wheels Fix here
 	AlloyWheelsFix(newModel, thisScript->m_szName);
@@ -196,11 +199,11 @@ void scm::InitialisePatterns()
 	Patterns.push_back(pattern); // Allowed small cars, bikes and heli's
 
 	// Bar Brawl - Bike 1
-	pattern = { .vehicle = {191}, .coords = {357, -745, 10},.move = {3, 0, 0} };
+	pattern = { .vehicle = {191}, .coords = {357, -745, 10}, .move = {3, 0, 0} };
 	Patterns.push_back(pattern);
 
 	// Bar Brawl - Bike 2
-	pattern = { .vehicle = {191}, .coords = {359, -742, 10},.move = {-5, -15, 0} };
+	pattern = { .vehicle = {191}, .coords = {359, -742, 10}, .move = {-5, -15, 0} };
 	Patterns.push_back(pattern);
 
 	// Bombs Away
@@ -236,12 +239,17 @@ int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread, b
 						break;
 					}
 				}
-				std::vector<int> vehicles = Patterns[index].allowed;
+				std::vector<int> vehicles;
+
+				if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], 0, 0, 0))
+					vehicles = Patterns[index].allowed;
+
 				std::vector<int> deniedVehicles = Patterns[index].denied;
 
 				// Coordinate check only
 				if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], x, y, z))
 				{
+					vehicles = Patterns[index].allowed;
 					std::vector<int> newVehicles = ProcessVehicleTypes(Patterns[index]);
 					for (int a = 0; a < newVehicles.size(); a++)
 						vehicles.push_back(newVehicles[a]);
@@ -249,6 +257,7 @@ int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread, b
 				// Thread check only
 				if (Patterns[index].thread == thread)
 				{
+					vehicles = Patterns[index].allowed;
 					std::vector<int> newVehicles = ProcessVehicleTypes(Patterns[index]);
 					for (int a = 0; a < newVehicles.size(); a++)
 						vehicles.push_back(newVehicles[a]);
@@ -257,6 +266,7 @@ int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread, b
 				if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], x, y, z) &&
 					Patterns[index].doors > 0)
 				{
+					vehicles = Patterns[index].allowed;
 					for (int model = 130; model < 237; model++)
 					{
 						if (CVehicleModelInfo::GetMaximumNumberOfPassengersFromNumberOfDoors(model) == Patterns[index].doors - 1)
@@ -266,6 +276,7 @@ int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread, b
 				// Any other check that uses allowed types
 				if (Patterns[index].allowedType.size() > 0)
 				{
+					vehicles = Patterns[index].allowed;
 					std::vector<int> newVehicles = ProcessVehicleTypes(Patterns[index]);
 					for (int a = 0; a < newVehicles.size(); a++)
 						vehicles.push_back(newVehicles[a]);
