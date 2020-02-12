@@ -5,7 +5,7 @@ void __fastcall Autosave::RequestAutosave(CRunningScript* script, void* edx, int
 {
 	ProcessCommands0to99(script, opcode);
 
-	if (opcode == 78 && ShouldSave)
+	if (opcode == 78 && script->m_bIsMission && ShouldSave)
 	{
 		int slot = Config::Autosave::slot;
 		bool inVehicle = FindPlayerPed()->m_bInVehicle;

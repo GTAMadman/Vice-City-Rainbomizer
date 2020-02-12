@@ -22,12 +22,7 @@ void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* thisScript, void* e
 		InitialisePatterns();
 
 	// Check for vehicle pattern
-	newModel = GetIDBasedOnPattern(origModel, x, y, z, thisScript->m_szName, false);
-
-	// No pattern found
-	if (newModel == 0)
-		newModel = GetIDBasedOnPattern(origModel, x, y, z, thisScript->m_szName, true);
-
+	newModel = GetIDBasedOnPattern(origModel, x, y, z, thisScript->m_szName);
 
 	/* RC Vehicles can spawn through this function, 
 	so to prevent this if disabled, I have added this here */
@@ -146,6 +141,10 @@ void scm::InitialisePatterns()
 	pattern = { .vehicle = {190}, .allowed = {190}, .allowedType = {"heli"}, .move = {65, -14, 3}, .moveType = {"heli"} };
 	Patterns.push_back(pattern);
 
+	// Avery's Stretch
+	pattern = { .vehicle = {139}, .denied = {167}, .allowedType = {"car", "bike"}, .coords = {306, -241, 12} };
+	Patterns.push_back(pattern); // Crashes as a Coach for some reason
+
 	// RC Bandit
 	pattern = { .vehicle = {171}, .allowed = {171}, .allowedType = {"car"} };
 	Patterns.push_back(pattern);
@@ -211,112 +210,117 @@ void scm::InitialisePatterns()
 	.move = {0, -10, 0}, .moveType = {"heli"} };
 	Patterns.push_back(pattern);
 
+	// Supply & Demand
+	pattern = { .vehicle = {176}, .denied = {190}, .allowedType = {"boat"}, .coords = {-378, -660, 5} };
+	Patterns.push_back(pattern);
+
 	// Trojan Voodoo
 	pattern = { .vehicle = {142}, .allowed = {142}, .coords = {-1071, -608, 9} };
 	Patterns.push_back(pattern);
 }
 /* I've only built the pattern system to work with the necessary patterns for the main game.
-   This may be changed in future. */
-int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread, bool generalVehicle)
+   Currently this isn't a great way to do it, but this may be changed in future. */
+int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread)
 {
-	int newModel = 0;
-
-	// Only run this if it's a mission vehicle
-	if (!generalVehicle)
+	// Scripted Vehicle Patterns
+	for (int i = 0; i < Patterns.size(); i++)
 	{
-		for (int i = 0; i < Patterns.size(); i++)
+		int index = i;
+		if (Patterns[index].vehicle == origModel)
 		{
-			int index = i;
-			if (Patterns[index].vehicle == origModel)
+			// Check for more than one vehicle in pattern (checking using coordinates)
+			// This will allow multiple vehicles to be used in the patterns - as long as they have coords!
+			for (int a = 0; a < Patterns.size(); a++)
 			{
-				// Check for more than one vehicle in pattern (checking using coordinates)
-				// This will allow multiple vehicles to be used in the patterns - as long as they have coords!
-				for (int a = 0; a < Patterns.size(); a++)
+				if (DoCoordinatesMatch(Patterns[a].coords[0], Patterns[a].coords[1], Patterns[a].coords[2], x, y, z))
 				{
-					if (DoCoordinatesMatch(Patterns[a].coords[0], Patterns[a].coords[1], Patterns[a].coords[2], x, y, z))
-					{
-						index = a;
-						break;
-					}
+					index = a;
+					break;
 				}
-				std::vector<int> vehicles;
-
-				if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], 0, 0, 0))
-					vehicles = Patterns[index].allowed;
-
-				std::vector<int> deniedVehicles = Patterns[index].denied;
-
-				// Coordinate check only
-				if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], x, y, z))
-				{
-					vehicles = Patterns[index].allowed;
-					std::vector<int> newVehicles = ProcessVehicleTypes(Patterns[index]);
-					for (int a = 0; a < newVehicles.size(); a++)
-						vehicles.push_back(newVehicles[a]);
-				}
-				// Thread check only
-				if (Patterns[index].thread == thread)
-				{
-					vehicles = Patterns[index].allowed;
-					std::vector<int> newVehicles = ProcessVehicleTypes(Patterns[index]);
-					for (int a = 0; a < newVehicles.size(); a++)
-						vehicles.push_back(newVehicles[a]);
-				}
-				// Coordinate and door check
-				if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], x, y, z) &&
-					Patterns[index].doors > 0)
-				{
-					vehicles = Patterns[index].allowed;
-					for (int model = 130; model < 237; model++)
-					{
-						if (CVehicleModelInfo::GetMaximumNumberOfPassengersFromNumberOfDoors(model) == Patterns[index].doors - 1)
-							vehicles.push_back(model);
-					}
-				}
-				// Any other check that uses allowed types
-				if (Patterns[index].allowedType.size() > 0)
-				{
-					vehicles = Patterns[index].allowed;
-					std::vector<int> newVehicles = ProcessVehicleTypes(Patterns[index]);
-					for (int a = 0; a < newVehicles.size(); a++)
-						vehicles.push_back(newVehicles[a]);
-				}
-				// Remove any denied vehicles
-				if (Patterns[index].denied.size() > 0)
-				{
-					for (int x = 0; x < Patterns[index].denied.size(); x++)
-					{
-						vehicles.erase(std::remove(vehicles.begin(), vehicles.end(),
-							Patterns[index].denied[x]), vehicles.end());
-					}
-				}
-				if (vehicles.size() == 0)
-					return newModel;
-
-				Patterns[index].chosen = vehicles[RandomNumber(0, vehicles.size() - 1)];
-				return Patterns[index].chosen;
 			}
+			std::vector<int> vehicles;
 
-			/* Patterns without a vehicle check */
+			if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], 0, 0, 0))
+				vehicles = Patterns[index].allowed;
 
-			std::vector<int> vehicles = Patterns[index].allowed;
+			std::vector<int> deniedVehicles = Patterns[index].denied;
 
-			// Thread and door check only - used for Vigilante and Firefighter
-			if (Patterns[index].thread == thread && Patterns[index].doors > 0)
+			// Coordinate check only
+			if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], x, y, z))
 			{
+				vehicles = Patterns[index].allowed;
+				std::vector<int> newVehicles = ProcessVehicleTypes(Patterns[index]);
+				for (int a = 0; a < newVehicles.size(); a++)
+					vehicles.push_back(newVehicles[a]);
+			}
+			// Thread check only
+			if (Patterns[index].thread == thread)
+			{
+				vehicles = Patterns[index].allowed;
+				std::vector<int> newVehicles = ProcessVehicleTypes(Patterns[index]);
+				for (int a = 0; a < newVehicles.size(); a++)
+					vehicles.push_back(newVehicles[a]);
+			}
+			// Coordinate and door check
+			if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], x, y, z) &&
+				Patterns[index].doors > 0)
+			{
+				vehicles = Patterns[index].allowed;
 				for (int model = 130; model < 237; model++)
 				{
 					if (CVehicleModelInfo::GetMaximumNumberOfPassengersFromNumberOfDoors(model) == Patterns[index].doors - 1)
 						vehicles.push_back(model);
 				}
-				if (vehicles.size() == 0)
-					return newModel;
+			}
+			// Any other check that uses allowed types
+			if (Patterns[index].allowedType.size() > 0)
+			{
+				// If this pattern has coordinates, don't run this
+				if (!DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], x, y, z) &&
+					DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], 0, 0, 0))
+				{
+					vehicles = Patterns[index].allowed;
+					std::vector<int> newVehicles = ProcessVehicleTypes(Patterns[index]);
+					for (int a = 0; a < newVehicles.size(); a++)
+						vehicles.push_back(newVehicles[a]);
+				}
+			}
+			// Remove any denied vehicles
+			if (Patterns[index].denied.size() > 0)
+			{
+				for (int x = 0; x < Patterns[index].denied.size(); x++)
+				{
+					vehicles.erase(std::remove(vehicles.begin(), vehicles.end(),
+						Patterns[index].denied[x]), vehicles.end());
+				}
+			}
 
+			if (vehicles.size() > 0)
+			{
 				Patterns[index].chosen = vehicles[RandomNumber(0, vehicles.size() - 1)];
 				return Patterns[index].chosen;
 			}
 		}
-		return newModel;
+
+		/* Patterns without a vehicle check */
+
+		std::vector<int> vehicles = Patterns[index].allowed;
+
+		// Thread and door check only - used for Vigilante and Firefighter
+		if (Patterns[index].thread == thread && Patterns[index].doors > 0)
+		{
+			for (int model = 130; model < 237; model++)
+			{
+				if (CVehicleModelInfo::GetMaximumNumberOfPassengersFromNumberOfDoors(model) == Patterns[index].doors - 1)
+					vehicles.push_back(model);
+			}
+			if (vehicles.size() > 0)
+			{
+				Patterns[index].chosen = vehicles[RandomNumber(0, vehicles.size() - 1)];
+				return Patterns[index].chosen;
+			}
+			return origModel;
+		}
 	}
 
 	/* General Vehicle Patterns */
@@ -324,6 +328,7 @@ int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread, b
 	// Added this as a safety precaution
 	if (CheckVehicleModel(origModel) == "unknown")
 	{
+		int newModel = 0;
 		while (!ModelInfo::IsCarModel(newModel))
 		{
 			newModel = RandomNumber(130, 236);

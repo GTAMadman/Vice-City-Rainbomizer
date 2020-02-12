@@ -11,8 +11,8 @@ class Weapons : Functions
 public:
 	static void Initialise();
 private:
-	static int __fastcall GiveRandomizedWeapon(CPed* ped, void* edx, int weapon, int ammo, bool likeUnused);
-	static void __fastcall SetCurrentWeapon(CPed* ped, void* edx, int weapon);
+	static int __fastcall GiveRandomizedWeapon(CPed* ped, void* edx, eWeaponType weapon, int ammo, bool likeUnused);
+	static void __fastcall SetCurrentWeapon(CPed* ped, void* edx, eWeaponType weapon);
 	static bool IsBlacklistedWeapon(int modelID);
 	static bool IsMeleeWeapon(int modelID);
 };

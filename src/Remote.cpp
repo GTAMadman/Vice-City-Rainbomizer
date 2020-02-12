@@ -14,11 +14,7 @@ void Remote::GivePlayerRCVehicleHooked(float x, float y, float z, float angle, s
 	int newZ = z;
 
 	// Check for vehicle pattern
-	newModel = scm::GetIDBasedOnPattern(modelId, x, y, z, "null", false);
-
-	// No pattern found
-	if (newModel == 0)
-		newModel = scm::GetIDBasedOnPattern(modelId, x, y, z, "null", true);
+	newModel = scm::GetIDBasedOnPattern(modelId, x, y, z, "null");
 
 	// Change the coordinates
 	newX += scm::CheckPatternForMovePosition(modelId, x, y, z).x;

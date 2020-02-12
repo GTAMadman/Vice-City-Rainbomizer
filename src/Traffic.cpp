@@ -14,7 +14,7 @@ int Traffic::ChooseModel()
 	/* From the randomly loaded vehicles, this will choose a model to spawn in traffic */
 	int model;
 
-	if (*ms_numVehiclesLoaded < 3) // Added as a safety precaution
+	if (*ms_numVehiclesLoaded < 1) // Added as a safety precaution
 		return -1;
 
 	while ((model = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)],
@@ -29,11 +29,11 @@ int Traffic::ChoosePoliceModel()
 {
 	int model;
 
-	if (*ms_numVehiclesLoaded < 3) // Added as a safety precaution
+	if (*ms_numVehiclesLoaded < 1) // Added as a safety precaution
 		return 156;
 
 	while ((model = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)],
-		ModelInfo::IsBlacklistedVehicle(model)));
+		!ModelInfo::IsPoliceModel(model)));
 
 	if (CStreaming::ms_aInfoForModel[model].m_nLoadState != 1)
 		return 156;
@@ -131,6 +131,9 @@ void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int m
 	if (CModelInfo::IsCarModel(model))
 		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(model, createdBy);
 
+	if (CStreaming::ms_aInfoForModel[vehicle->m_nModelIndex].m_nLoadState != 1)
+		LoadModel(vehicle->m_nModelIndex);
+
 	return vehicle;
 }
 void Traffic::AddPoliceCarOccupants(CVehicle* vehicle)
@@ -159,22 +162,21 @@ void Traffic::FixBoatSpawns(CPhysical* entity)
 			posn.z += 2;
 			break;
 		case 223:
-			posn.z++;
-			break;
 		case 176:
 			posn.z++;
+			break;
 		}
 		entity->SetPosition(posn);
 	}
 	CWorld::Add(entity);
 }
-
 void Traffic::Initialise()
 {
 	if (Config::TrafficRandomizer::Enabled)
 	{
 		plugin::patch::RedirectCall(0x426FA6, ChooseModel);
 		plugin::patch::RedirectCall(0x426F80, ChoosePoliceModel);
+		plugin::patch::RedirectCall(0x426BA4, ChoosePoliceModel);
 		plugin::patch::RedirectCall(0x4098D3, ChooseModelToLoad);
 		plugin::patch::RedirectCall(0x42773A, FixTrafficVehicles);
 		plugin::patch::RedirectCall(0x53AC31, RandomizeCarPeds);

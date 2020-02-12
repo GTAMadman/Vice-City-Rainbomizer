@@ -36,7 +36,7 @@ private:
 	static std::vector<int> AlloyWheelsVehicles;
 public:
 	static void Initialise();
-	static int GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread, bool generalVehicle);
+	static int GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread);
 	static CVector CheckPatternForMovePosition(int origModel, int x, int y, int z);
 	static std::vector<Pattern> Patterns;
 	static void InitialisePatterns();
