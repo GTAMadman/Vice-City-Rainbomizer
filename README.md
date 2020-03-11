@@ -6,7 +6,7 @@ Rainbomizer is a randomizer for Grand Theft Auto Vice City.
 - **RC Vehicles Randomizer**: Randomizes the vehicles you are given in the RC missions.
 - **Parked Vehicles Randomizer**: Randomizes cars which are found parked around the map.
 - **Colour Randomizer**: Randomizes the colours of various in-game elements, including cars, the HUD, and markers.
-- **Traffic Randomizer**: Randomizes cars that spawn on traffic including law enforcement vehicles.
+- **Traffic Randomizer**: Randomizes vehicles that spawn in traffic, including law enforcement vehicles.
 - **Weapon Randomizer**: Randomizes the weapons that are given to other peds throughout the game.
 - **Voice Line Randomizer**: Randomizes the voice lines played in missions and phonecalls.
 - **Autosave**: Automatically creates a savegame in slot 8 upon completing a mission. The autosave slot can be changed in the config file.
