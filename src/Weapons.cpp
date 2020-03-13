@@ -21,7 +21,7 @@ int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, eWeaponType w
 	CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_WeaponSlot = origSlot;
 
 	ped->GiveWeapon((eWeaponType)newWeapon, ammo, likeUnused);
-	ped->m_nWepSlot = origSlot;
+	ped->m_nActiveWeaponSlot = origSlot;
 
 	CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_WeaponSlot = newSlot;
 	return newWeapon;
@@ -45,15 +45,7 @@ void __fastcall Weapons::SetCurrentWeapon(CPed* ped, void* edx, eWeaponType weap
 		ped->SetCurrentWeapon(newSlot);
 		return;
 	}
-	ped->SetCurrentWeapon(ped->m_nWepSlot);
-}
-bool Weapons::IsMeleeWeapon(int modelID)
-{
-	if (modelID > 0 && modelID < 12)
-		return true;
-	if (modelID == 14 || modelID == 36)
-		return true;
-	return false;
+	ped->SetCurrentWeapon(ped->m_nActiveWeaponSlot);
 }
 bool Weapons::IsBlacklistedWeapon(int modelID)
 {
@@ -86,14 +78,6 @@ void Weapons::Initialise()
 			0x51C841, 0x51C85B, 0x520B30, 0x534472, 0x53B70B, 0x53B9C8, 0x5D49D3,
 			0x603493, 0x603FBC, 0x6300BB})
 			plugin::patch::RedirectCall(addr, SetCurrentWeapon);
-
-		// CPed::SetCurrentWeapon
-		/*for (int setWepAddresses : {0x429AB0, 0x429CF2, 0x429D25, 0x4440D5, 0x452251,
-			0x45241A, 0x452440, 0x4EB761, 0x4EB761, 0x4EC234, 0x4EC2DB, 0x4ED63D,
-			0x4ED7DD, 0x4ED84E, 0x4ED8C8, 0x4EF461, 0x4EF7A5, 0x4F587A, 0x4F5AF3,
-			0x4FF688, 0x4FF70A, 0x4FF769, 0x4FF8F4, 0x50F254, 0x51C841, 0x51C85B,
-			0x520B30, 0x53B70B, 0x53B9C8, 0x5D49D3, 0x603493, 0x603FBC, 0x6300BB})
-			plugin::patch::RedirectCall(setWepAddresses, SetCurrentWeapon);*/
 
 		/* Used for getting current thread.
 		Currently only used for weapon randomizer */

@@ -24,9 +24,9 @@ void __fastcall Parked::ParkedVehiclesRandomizer(CCarGenerator* gen)
 void* __fastcall Parked::CarparkVehiclesRandomizer(CVehicle* vehicle, void* edx, int model, char createdBy)
 {
 	int newModel;
-	while ((newModel = RandomNumber(130, 236)), ModelInfo::IsBlacklistedVehicle(newModel));
 
-	LoadModel(newModel);
+	while ((newModel = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)],
+		ModelInfo::IsBlacklistedVehicle(newModel)) || newModel < 130 || newModel > 236);
 
 	if (CModelInfo::IsBoatModel(newModel))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(newModel, createdBy);
@@ -43,6 +43,12 @@ void* __fastcall Parked::CarparkVehiclesRandomizer(CVehicle* vehicle, void* edx,
 	if (CModelInfo::IsCarModel(newModel))
 		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(newModel, createdBy);
 
+	// if the vehicle isn't loaded, return a police car
+	if (CStreaming::ms_aInfoForModel[newModel].m_nLoadState != 1)
+	{
+		newModel = 156;
+		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(newModel, createdBy);
+	}
 	return vehicle;
 }
 void Parked::Initialise()

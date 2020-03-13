@@ -7,6 +7,8 @@
 #include "CStreaming.h"
 #include "CPopulation.h"
 #include "CWorld.h"
+#include "eEntityStatus.h"
+#include "CCarCtrl.h"
 #include "CBoat.h"
 #include "CPlane.h"
 #include "CHeli.h"
@@ -17,7 +19,6 @@ class Traffic : Functions
 public:
 	static void Initialise();
 private:
-	static int* ms_numVehiclesLoaded;
 	static void AddPoliceCarOccupants(CVehicle* vehicle);
 	static int ChooseModelToLoad();
 	static int ChooseModel();
@@ -30,4 +31,5 @@ private:
 	static void __fastcall PedEnterCar(CPed* ped, void* edx);
 	static void __fastcall SetExitCar(CPed* ped, void* edx, CVehicle* vehicle, int value);
 	static int __fastcall FixPedKilledInRCVehicle(CPed* ped, void* edx);
+	static bool FixDeadPedsInFrontOfRCVehicles(int modelID);
 };

@@ -47,10 +47,20 @@ public:
 	{
 		std::string vehicleName = "RandomizeVehicleColours";
 		std::string textName = "RandomizeTextColours";
-		std::string vibrantOnlyName = "VibrantTextColoursOnly";
+		std::string vibrantOnlyName = "VibrantStaticTextColoursOnly";
+		std::string rainbowTextName = "RainbowTextColours";
+		std::string markersText = "RandomizeMarkerColours";
 		static bool vehicleEnabled;
 		static bool textEnabled;
 		static bool vibrantOnlyEnabled;
+		static bool rainbowTextEnabled;
+		static bool markersEnabled;
+		void Read();
+	};
+	struct VoiceLineRandomizer
+	{
+		std::string Name = "VoiceLineRandomizer";
+		static bool Enabled;
 		void Read();
 	};
 	struct Autosave

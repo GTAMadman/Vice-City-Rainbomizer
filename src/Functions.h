@@ -15,8 +15,10 @@ private:
 public:
 	static int RandomNumber(unsigned int min, unsigned int max);
 	static void LoadModel(int modelID);
+	static int* ms_numVehiclesLoaded;
 	static char* GetThreadName();
 	static void SetThreadName(char* thread);
 	static bool DoCoordinatesMatch(int x1, int y1, int z1, int x2, int y2, int z2);
+	static bool IsModelLoaded(int modelID);
 	static void __fastcall StartMission(CRunningScript* script, void* edx, int* arg0, short count);
 };

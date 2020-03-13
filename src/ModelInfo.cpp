@@ -53,22 +53,6 @@ bool ModelInfo::IsRCModel(int modelID)
 	}
 	return false;
 }
-bool ModelInfo::IsPoliceModel(int modelID)
-{
-	switch (modelID)
-	{
-	case 156:
-	case 157:
-	case 160:
-	case 162:
-	case 163:
-	case 227:
-	case 147:
-	case 153: // Not a police vehicle but wanted to add it :P
-		return true;
-	}
-	return false;
-}
 bool ModelInfo::IsCarModel(int modelID)
 {
 	if (modelID > 129 && modelID < 136)

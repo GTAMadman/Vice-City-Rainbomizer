@@ -17,26 +17,27 @@ void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* thisScript, void* e
 	int newY = y;
 	int newZ = z;
 
-	// Only initialise if the patterns are empty
-	if (Patterns.size() == 0)
-		InitialisePatterns();
-
-	// Check for vehicle pattern
-	newModel = GetIDBasedOnPattern(origModel, x, y, z, thisScript->m_szName);
-
-	/* RC Vehicles can spawn through this function, 
-	so to prevent this if disabled, I have added this here */
+	/* RC Vehicles can spawn through this function */
 	if (!Config::RCVehiclesRandomizer::Enabled && IsRCModel(origModel))
 		newModel = origModel;
 
-	// Load the vehicle then change it to the new model
+	if (newModel != origModel)
+		newModel = GetIDBasedOnPattern(origModel, x, y, z, thisScript->m_szName);
+
+	// Attempt to load the vehicle
 	LoadModel(newModel);
+
+	// If the vehicle isn't loaded, return the original
+	if (!IsModelLoaded(newModel))
+		newModel = origModel;
+	
 	CTheScripts::ScriptParams[0].iParam = newModel;
 
 	// Change the coordinates
-	newX += CheckPatternForMovePosition(origModel, x, y, z).x;
-	newY += CheckPatternForMovePosition(origModel, x, y, z).y;
-	newZ += CheckPatternForMovePosition(origModel, x, y, z).z;
+	CVector posn = CheckPatternForMovePosition(origModel, x, y, z);
+	newX += posn.x;
+	newY += posn.y;
+	newZ += posn.z;
 
 	if (!DoCoordinatesMatch(newX, newY, newZ, x, y, z))
 	{
@@ -82,7 +83,8 @@ void* __fastcall scm::CreateRandomizedCab(CVehicle* vehicle, void* edx, int mode
 	int newModel;
 
 	while ((newModel = RandomNumber(130, 236)), ModelInfo::IsBlacklistedVehicle(newModel) || 
-		ModelInfo::IsRCModel(newModel) || CModelInfo::IsBoatModel(newModel) || newModel == 155);
+		ModelInfo::IsRCModel(newModel) || CModelInfo::IsBoatModel(newModel) || newModel == 155 ||
+		newModel == 178 || newModel == 215); // Hunter, Pizza Boy, Baggage
 
 	LoadModel(newModel);
 
@@ -96,6 +98,21 @@ void* __fastcall scm::CreateRandomizedCab(CVehicle* vehicle, void* edx, int mode
 		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(newModel, createdBy);
 
 	return vehicle;
+}
+void __fastcall scm::FixBombsAwayVan(CRunningScript* thisScript, void* edx, int* arg0, short count)
+{
+	thisScript->CollectParameters(arg0, count);
+
+	/* As it resets the vehicle position, I have to change it here instead */
+	if (thisScript->m_szName == (std::string)"hait2")
+	{
+		int x = CTheScripts::ScriptParams[1].fParam;
+		int y = CTheScripts::ScriptParams[2].fParam;
+		int z = CTheScripts::ScriptParams[3].fParam;
+
+		if (x == -808 && y == -162 && z == 10)
+			CTheScripts::ScriptParams[2].fParam += 15;
+	}
 }
 void* __fastcall scm::OpenBootFix(CAutomobile* vehicle, void* edx)
 {
@@ -178,8 +195,8 @@ void scm::InitialisePatterns()
 	Patterns.push_back(pattern);
 
 	// Firefighter
-	pattern = { .thread = {"firetru"}, .doors = {4} };
-	Patterns.push_back(pattern);
+	pattern = { .thread = {"firetru"} };
+	Patterns.push_back(pattern); // Using thread only will return the original vehicle
 
 	// Publicity Tour
 	pattern = { .vehicle = {201}, .coords = {-872, 1151, 11}, .doors = {4} };
@@ -212,6 +229,30 @@ void scm::InitialisePatterns()
 
 	// Supply & Demand
 	pattern = { .vehicle = {176}, .denied = {190}, .allowedType = {"boat"}, .coords = {-378, -660, 5} };
+	Patterns.push_back(pattern);
+
+	// All Hands on Deck - Maverick
+	pattern = { .vehicle = {217}, .allowedType = {"car", "heli"}, .thread = {"col_5"} };
+	Patterns.push_back(pattern);
+
+	// All Hands on Deck - Hunter
+	pattern = { .vehicle = {155}, .allowedType = {"car", "heli", "rc"}, .thread = {"col_5"} };
+	Patterns.push_back(pattern);
+
+	// Hit the Courier - Maverick
+	pattern = { .vehicle = {217}, .allowedType = {"car", "heli", "rc"}, .thread = {"count2"} };
+	Patterns.push_back(pattern);
+
+	// Cop Land - police car
+	pattern = { .vehicle = {156}, .coords = {469, 336, 11}, .move = {0, -5, 0} };
+	Patterns.push_back(pattern);
+
+	// Cannon Fodder - Pony
+	pattern = { .vehicle = {143}, .allowedType = {"car", "bike"}, .coords = {-1161, 76, 10}, .move = {-2, 0, 0} };
+	Patterns.push_back(pattern);
+
+	// Naval Engagement - Jetmax
+	pattern = { .vehicle = {223}, .denied = {190}, .coords = {-722, -1163, 5} };
 	Patterns.push_back(pattern);
 
 	// Trojan Voodoo
@@ -275,9 +316,9 @@ int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread)
 			// Any other check that uses allowed types
 			if (Patterns[index].allowedType.size() > 0)
 			{
-				// If this pattern has coordinates, don't run this
-				if (!DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], x, y, z) &&
-					DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], 0, 0, 0))
+				// If this pattern has coordinates or a thread check, don't run this
+				if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], 0, 0, 0)
+					&& Patterns[index].thread == "")
 				{
 					vehicles = Patterns[index].allowed;
 					std::vector<int> newVehicles = ProcessVehicleTypes(Patterns[index]);
@@ -294,7 +335,6 @@ int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread)
 						Patterns[index].denied[x]), vehicles.end());
 				}
 			}
-
 			if (vehicles.size() > 0)
 			{
 				Patterns[index].chosen = vehicles[RandomNumber(0, vehicles.size() - 1)];
@@ -306,20 +346,24 @@ int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread)
 
 		std::vector<int> vehicles = Patterns[index].allowed;
 
-		// Thread and door check only - used for Vigilante and Firefighter
-		if (Patterns[index].thread == thread && Patterns[index].doors > 0)
+		// Thread and door check - used for Vigilante and Firefighter
+		if (Patterns[index].thread == thread)
 		{
-			for (int model = 130; model < 237; model++)
+			if (Patterns[index].doors > 0)
 			{
-				if (CVehicleModelInfo::GetMaximumNumberOfPassengersFromNumberOfDoors(model) == Patterns[index].doors - 1)
-					vehicles.push_back(model);
+				for (int model = 130; model < 237; model++)
+				{
+					if (CVehicleModelInfo::GetMaximumNumberOfPassengersFromNumberOfDoors(model) == Patterns[index].doors - 1)
+						vehicles.push_back(model);
+				}
+				if (vehicles.size() > 0)
+				{
+					Patterns[index].chosen = vehicles[RandomNumber(0, vehicles.size() - 1)];
+					return Patterns[index].chosen;
+				}
 			}
-			if (vehicles.size() > 0)
-			{
-				Patterns[index].chosen = vehicles[RandomNumber(0, vehicles.size() - 1)];
-				return Patterns[index].chosen;
-			}
-			return origModel;
+			if (Patterns[index].vehicle == 0)
+				return origModel;
 		}
 	}
 
@@ -330,9 +374,8 @@ int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread)
 	{
 		int newModel = 0;
 		while (!ModelInfo::IsCarModel(newModel))
-		{
 			newModel = RandomNumber(130, 236);
-		}
+
 		return newModel;
 	}
 
@@ -345,7 +388,9 @@ int scm::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread)
 			break;
 		}
 	}
-	return vehicles[RandomNumber(0, vehicles.size() - 1)];
+	if (vehicles.size() > 0)
+		return vehicles[RandomNumber(0, vehicles.size() - 1)];
+	return origModel; // Return original
 }
 CVector scm::CheckPatternForMovePosition(int origModel, int x, int y, int z)
 {
@@ -491,7 +536,11 @@ void scm::Initialise()
 		plugin::patch::RedirectCall(0x42AEB0, CreateRandomizedCab);
 		plugin::patch::RedirectCall(0x445267, FixForcedPlayerVehicleType);
 		plugin::patch::RedirectCall(0x445202, FixForcedPedVehicleType);
+		plugin::patch::RedirectCall(0x44AA20, FixBombsAwayVan);
 		plugin::patch::RedirectCall(0x6316CE, OpenBootFix);
 		plugin::patch::SetChar(0x59EF9A, 1); // Unlock police vehicle doors
+
+		if (Patterns.size() == 0)
+		InitialisePatterns();
 	}
 }

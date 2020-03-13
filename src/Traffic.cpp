@@ -1,13 +1,18 @@
 #include "Traffic.h"
 
-int* Traffic::ms_numVehiclesLoaded = reinterpret_cast<int*>(0xA10858);
 int Traffic::ChooseModelToLoad()
 {
 	/* Loads a random vehicle model into memory */
 	int newModel;
-	while ((newModel = RandomNumber(130, 236)), ModelInfo::IsBlacklistedVehicle(newModel))
+	for (int i = 0; i < 21; i++)
+	{
+		newModel = RandomNumber(130, 236);
+		if (ModelInfo::IsBlacklistedVehicle(newModel))
+			continue;
 
-	return newModel;
+		return newModel;
+	}
+	return -1;
 }
 int Traffic::ChooseModel()
 {
@@ -17,13 +22,19 @@ int Traffic::ChooseModel()
 	if (*ms_numVehiclesLoaded < 1) // Added as a safety precaution
 		return -1;
 
-	while ((model = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)],
-		ModelInfo::IsBlacklistedVehicle(model)) || model < 130 || model > 236);
+	// Attempt to get a loaded vehicle 20 times - otherwise return nothing
+	for (int i = 0; i < 21; i++)
+	{
+		model = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)];
+		if (ModelInfo::IsBlacklistedVehicle(model) || model < 130 || model > 236)
+			continue;
 
-	if (CStreaming::ms_aInfoForModel[model].m_nLoadState != 1)
-		return -1;
+		if (!IsModelLoaded(model))
+			return -1;
 
-	return model;
+		return model;
+	}
+	return -1;
 }
 int Traffic::ChoosePoliceModel()
 {
@@ -33,9 +44,10 @@ int Traffic::ChoosePoliceModel()
 		return 156;
 
 	while ((model = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)],
-		!ModelInfo::IsPoliceModel(model)));
+		ModelInfo::IsBlacklistedVehicle(model)) || model < 130 || model > 236 || model == 178 ||
+		model == 215); // Pizza Boy & Baggage - 1 seater vehicles which cause crashes for cops
 
-	if (CStreaming::ms_aInfoForModel[model].m_nLoadState != 1)
+	if (!IsModelLoaded(model))
 		return 156;
 
 	return model;
@@ -45,12 +57,7 @@ void __fastcall Traffic::PedEnterCar(CPed* ped, void* edx)
 	if (ModelInfo::IsRCModel(ped->m_pVehicle->m_nModelIndex))
 	{
 		if (Config::RCVehiclesRandomizer::DriveRCVehiclesEnabled)
-		{
-			if (ped->IsPlayer())
-				ped->WarpPedIntoCar(ped->m_pVehicle);
-			else
-				ped->QuitEnteringCar();
-		}
+			ped->IsPlayer() ? ped->WarpPedIntoCar(ped->m_pVehicle) : ped->QuitEnteringCar();
 		else
 			ped->QuitEnteringCar();
 	}
@@ -65,7 +72,6 @@ void __fastcall Traffic::PedExitCar(CPed* ped, void* edx)
 		ped->m_bInVehicle = false;
 		CVector posn = ped->GetPosition();
 		posn.z += 2;
-
 		ped->Teleport(posn);
 	}
 	else
@@ -82,11 +88,15 @@ void __fastcall Traffic::SetExitCar(CPed* ped, void* edx, CVehicle* vehicle, int
 }
 int __fastcall Traffic::FixPedKilledInRCVehicle(CPed* ped, void* edx)
 {
-	/* Fix peds who are killed inside RC vehicles */
 	if (ModelInfo::IsRCModel(ped->m_pVehicle->m_nModelIndex))
 		return 0;
-
 	return ped->BeingDraggedFromCar();
+}
+bool Traffic::FixDeadPedsInFrontOfRCVehicles(int modelID)
+{
+	if (ModelInfo::IsRCModel(modelID) || CModelInfo::IsBoatModel(modelID))
+		return false;
+	return true;
 }
 void* Traffic::RandomizeCarPeds(ePedType type, int model, CVector posn, int arg3)
 {
@@ -109,7 +119,7 @@ void* Traffic::RandomizeCarPeds(ePedType type, int model, CVector posn, int arg3
 	}
 	int loadModel = model;
 
-	while (CStreaming::ms_aInfoForModel[loadModel].m_nLoadState != 1)
+	if (CStreaming::ms_aInfoForModel[loadModel].m_nLoadState != 1)
 		LoadModel(loadModel);
 
 	return CPopulation::AddPed(type, model, posn, arg3);
@@ -132,7 +142,7 @@ void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int m
 		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(model, createdBy);
 
 	if (CStreaming::ms_aInfoForModel[vehicle->m_nModelIndex].m_nLoadState != 1)
-		LoadModel(vehicle->m_nModelIndex);
+		LoadModel(vehicle->m_nModelIndex); // Added for safety
 
 	return vehicle;
 }
@@ -155,18 +165,31 @@ void Traffic::FixBoatSpawns(CPhysical* entity)
 		CVector posn = entity->GetPosition();
 		switch (entity->m_nModelIndex)
 		{
+		case 184:
+			posn.z += 0.6f;
+			break;
+		case 183:
+		case 202:
+		case 160:
+		case 182:
+			posn.z += 0.5f;
+			break;
 		case 214:
 			posn.z += 1.5f;
 			break;
 		case 190:
 			posn.z += 2;
 			break;
-		case 223:
 		case 176:
+			posn.z += 0.9f;
+			break;
+		case 136:
+		case 223:
 			posn.z++;
 			break;
 		}
 		entity->SetPosition(posn);
+		entity->m_nState = eEntityStatus::STATUS_PHYSICS;
 	}
 	CWorld::Add(entity);
 }
@@ -181,9 +204,11 @@ void Traffic::Initialise()
 		plugin::patch::RedirectCall(0x42773A, FixTrafficVehicles);
 		plugin::patch::RedirectCall(0x53AC31, RandomizeCarPeds);
 		plugin::patch::RedirectCall(0x428D96, FixEmptyPoliceCars);
+		plugin::patch::RedirectCall(0x428FC8, FixDeadPedsInFrontOfRCVehicles);
 		plugin::patch::RedirectCall(0x428D7B, FixBoatSpawns);
 	}
-	// RC Vehicles Fixes - initialise these without checks
+	/* RC Vehicles Fixes - initialise these even without traffic being enabled
+	in case something else is enabled which can spawn RC vehicles */
 	plugin::patch::RedirectCall(0x4D7AD8, PedExitCar);
 	plugin::patch::RedirectCall(0x4D7AB2, PedEnterCar);
 	plugin::patch::RedirectCall(0x4D7ACF, FixPedKilledInRCVehicle);
