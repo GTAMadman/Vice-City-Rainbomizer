@@ -1,5 +1,7 @@
 Rainbomizer is a randomizer for Grand Theft Auto Vice City.
 
+<img src="https://cdn.discordapp.com/attachments/651869008618061837/678350944890781739/r1outink.png">
+
 ## Features
 
 - **Script Vehicle Randomizer**: Randomizes the vehicles you are given in missions. The randomizer makes sure that you get vehicles that are usable for the mission.
