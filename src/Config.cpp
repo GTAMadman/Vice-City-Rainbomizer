@@ -15,6 +15,7 @@ bool Config::ColourRandomizer::vibrantOnlyEnabled;
 bool Config::ColourRandomizer::rainbowTextEnabled;
 bool Config::ColourRandomizer::markersEnabled;
 bool Config::VoiceLineRandomizer::Enabled;
+bool Config::VoiceLineRandomizer::loopEnabled;
 bool Config::Autosave::Enabled;
 int Config::Autosave::slot;
 
@@ -283,6 +284,19 @@ void Config::VoiceLineRandomizer::Read()
 				break;
 			}
 			this->Enabled = false;
+			break;
+		}
+	}
+	for (int i = 0; i < data.size(); i++)
+	{
+		if (data[i].find(this->loopName) != std::string::npos)
+		{
+			if (data[i].find("true") != std::string::npos)
+			{
+				this->loopEnabled = true;
+				break;
+			}
+			this->loopEnabled = false;
 			break;
 		}
 	}

@@ -60,7 +60,9 @@ public:
 	struct VoiceLineRandomizer
 	{
 		std::string Name = "VoiceLineRandomizer";
+		std::string loopName = "LoopPhoneRingtone";
 		static bool Enabled;
+		static bool loopEnabled;
 		void Read();
 	};
 	struct Autosave

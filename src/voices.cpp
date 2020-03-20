@@ -1,17 +1,22 @@
 #include "voices.h"
 
+int voices::phoneCallSound = -1;
 std::vector<std::string> voices::sounds;
-void voices::PreloadMissionAudio(uint16_t* audio, int slot, char* text)
-{
-	plugin::CallMethod<0x5F9820>(audio, slot, text);
-}
 void __fastcall voices::LoadRandomizedAudio(uint16_t* audio, void* edx, int slot, char* text)
 {
 	char* sound;
 	int index = RandomNumber(0, sounds.size() - 1);
-	strcpy(sound, sounds[index].c_str());
 
-	PreloadMissionAudio(audio, slot, text);
+	if (Config::VoiceLineRandomizer::loopEnabled)
+	{
+		if (text == (std::string)"mobring")
+		{
+			phoneCallSound == -1 ? phoneCallSound = index : index = phoneCallSound;
+		}
+	}
+
+	strcpy(sound, sounds[index].c_str());
+	PreloadMissionAudio(audio, slot, sound);
 }
 void voices::InitialiseSounds()
 {
@@ -27,6 +32,10 @@ void voices::InitialiseSounds()
 			sounds.push_back(fileName);
 		}
 	}
+}
+void voices::PreloadMissionAudio(uint16_t* audio, int slot, char* text)
+{
+	plugin::CallMethod<0x5F9820>(audio, slot, text);
 }
 void voices::Initialise()
 {

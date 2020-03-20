@@ -67,6 +67,12 @@ void scm::FixForcedPlayerVehicleType(CRunningScript* thisScript, void* edx, int*
 		if (FindPlayerVehicle())
 		CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
 	}
+	// Kaufman Cab Missions & Checkpoint Charie
+	if (origModel == 216 || origModel == 176)
+	{
+		if (FindPlayerVehicle())
+			CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+	}
 }
 void scm::FixForcedPedVehicleType(CRunningScript* thisScript, void* edx, int* arg0, short count)
 {
@@ -183,7 +189,7 @@ void scm::InitialisePatterns()
 	Patterns.push_back(pattern);
 
 	// Taxi - The Job
-	pattern = { .vehicle = {150}, .coords = {496, -84, 9}, .doors = {4} };
+	pattern = { .vehicle = {150}, .allowed = {167, 161}, .coords = {496, -84, 9}, .doors = {4} };
 	Patterns.push_back(pattern);
 
 	// Speeder - Stunt Boat Challenge
@@ -199,7 +205,7 @@ void scm::InitialisePatterns()
 	Patterns.push_back(pattern); // Using thread only will return the original vehicle
 
 	// Publicity Tour
-	pattern = { .vehicle = {201}, .coords = {-872, 1151, 11}, .doors = {4} };
+	pattern = { .vehicle = {201}, .allowed = {167, 161}, .denied = {217, 227}, .coords = {-872, 1151, 11}, .doors = {4} };
 	Patterns.push_back(pattern);
 
 	// Phnom Penh '86 - Maverick
@@ -227,7 +233,7 @@ void scm::InitialisePatterns()
 	.move = {0, -10, 0}, .moveType = {"heli"} };
 	Patterns.push_back(pattern);
 
-	// Supply & Demand
+	// Supply & Demand - Squalo
 	pattern = { .vehicle = {176}, .denied = {190}, .allowedType = {"boat"}, .coords = {-378, -660, 5} };
 	Patterns.push_back(pattern);
 
@@ -257,6 +263,10 @@ void scm::InitialisePatterns()
 
 	// Trojan Voodoo
 	pattern = { .vehicle = {142}, .allowed = {142}, .coords = {-1071, -608, 9} };
+	Patterns.push_back(pattern);
+
+	// V.I.P - Taxi
+	pattern = { .vehicle = {150}, .denied = {178, 215}, .coords = {-546, -474, 10} };
 	Patterns.push_back(pattern);
 }
 /* I've only built the pattern system to work with the necessary patterns for the main game.
