@@ -64,13 +64,10 @@ bool Weapons::IsBlacklistedWeapon(int modelID)
 	switch (modelID)
 	{
 	case 13:
-		if (!Config::WeaponRandomizer::RemoteGrenadeEnabled)
-			goto blacklisted;
+		return Config::WeaponRandomizer::RemoteGrenadeEnabled;
 	case 16:
-		if (!Config::WeaponRandomizer::RocketEnabled)
-			goto blacklisted;
+		return Config::WeaponRandomizer::RocketEnabled;
 	case 35:
-	blacklisted:
 		return true;
 	}
 	return false;
