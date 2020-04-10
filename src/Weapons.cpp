@@ -9,7 +9,7 @@ int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, eWeaponType w
 	}
 
 	int newWeapon;
-	while ((newWeapon = RandomNumber(1, 36)), IsBlacklistedWeapon(newWeapon));
+	while ((newWeapon = GetRandomWeapon()), IsBlacklistedWeapon(newWeapon));
 	
 	// Load the weapon model before setting it
 	LoadModel(CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModelId);
@@ -47,15 +47,30 @@ void __fastcall Weapons::SetCurrentWeapon(CPed* ped, void* edx, eWeaponType weap
 	}
 	ped->SetCurrentWeapon(ped->m_nActiveWeaponSlot);
 }
+int Weapons::GetRandomWeapon()
+{
+	int weapon;
+	if (Config::WeaponRandomizer::WeightedWeaponRandomizationEnabled)
+	{
+		int weaponGroup = RandomNumber(0, 7);
+		weapon = WeaponGroups[weaponGroup][RandomNumber(0, WeaponGroups[weaponGroup].size()];
+	}
+	else
+		weapon = RandomNumber(0, 36);
+	return weapon;
+}
 bool Weapons::IsBlacklistedWeapon(int modelID)
 {
 	switch (modelID)
 	{
-	case 0:
 	case 13:
+		if (!Config::WeaponRandomizer::RemoteGrenadeEnabled)
+			goto blacklisted;
 	case 16:
-	case 34:
+		if (!Config::WeaponRandomizer::RocketEnabled)
+			goto blacklisted;
 	case 35:
+	blacklisted:
 		return true;
 	}
 	return false;
