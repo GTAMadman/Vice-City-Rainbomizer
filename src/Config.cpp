@@ -258,6 +258,45 @@ void Config::WeaponRandomizer::Read()
 			break;
 		}
 	}
+	for (int i = 0; i < data.size(); i++)
+	{
+		if (data[i].find(this->WeightedWeaponRandomizationEnabledName) != std::string::npos)
+		{
+			if (data[i].find("true") != std::string::npos)
+			{
+				this->WeightedWeaponRandomizationEnabled = true;
+				break;
+			}
+			this->WeightedWeaponRandomizationEnabled = false;
+			break;
+		}
+	}
+	for (int i = 0; i < data.size(); i++)
+	{
+		if (data[i].find(this->RemoteGrenadeEnabledName) != std::string::npos)
+		{
+			if (data[i].find("true") != std::string::npos)
+			{
+				this->RemoteGrenadeEnabled = true;
+				break;
+			}
+			this->RemoteGrenadeEnabled = false;
+			break;
+		}
+	}
+	for (int i = 0; i < data.size(); i++)
+	{
+		if (data[i].find(this->RocketEnabledName) != std::string::npos)
+		{
+			if (data[i].find("true") != std::string::npos)
+			{
+				this->RocketEnabled = true;
+				break;
+			}
+			this->RocketEnabled = false;
+			break;
+		}
+	}
 }
 void Config::VoiceLineRandomizer::Read()
 {
