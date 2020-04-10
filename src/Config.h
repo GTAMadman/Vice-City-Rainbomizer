@@ -40,7 +40,13 @@ public:
 	struct WeaponRandomizer
 	{
 		std::string Name = "WeaponRandomizer";
+		std::string WeightedWeaponRandomizationEnabledName = "WeightedWeaponRandomization";
+		std::string RemoteGrenadeEnabledName = "AllowRemoteGrenade";
+		std::string RocketEnabledName = "AllowRocketMissile";
 		static bool Enabled;
+		static bool WeightedWeaponRandomizationEnabled;
+		static bool RemoteGrenadeEnabled;
+		static bool RocketEnabled;
 		void Read();
 	};
 	struct ColourRandomizer
