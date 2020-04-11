@@ -62,7 +62,7 @@ int Weapons::GetRandomWeapon()
 	int weapon = 0;
 	if (Config::WeaponRandomizer::WeightedWeaponRandomizationEnabled)
 	{
-		int weaponGroup = RandomNumber(0, sizeof(WeaponGroups) / sizeof(WeaponGroups[0][0]));
+		int weaponGroup = RandomNumber(0, sizeof(WeaponGroups));
 		while ((weapon = WeaponGroups[weaponGroup][RandomNumber(0, WeaponGroups[weaponGroup].size() - 1)]), IsBlacklistedWeapon(weapon));
 		
 	}
