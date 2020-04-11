@@ -41,10 +41,12 @@ public:
 	{
 		std::string Name = "WeaponRandomizer";
 		std::string WeightedWeaponRandomizationEnabledName = "WeightedWeaponRandomization";
+		std::string UnarmedEnabledName = "AllowUnarmed";
 		std::string RemoteGrenadeEnabledName = "AllowRemoteGrenade";
 		std::string RocketEnabledName = "AllowRocketMissile";
 		static bool Enabled;
 		static bool WeightedWeaponRandomizationEnabled;
+		static bool UnarmedEnabled;
 		static bool RemoteGrenadeEnabled;
 		static bool RocketEnabled;
 		void Read();
