@@ -59,9 +59,9 @@ int Weapons::GetRandomWeapon()
 		weapon = RandomNumber(0, 36);
 	return weapon;
 }
-bool Weapons::IsBlacklistedWeapon(int modelID)
+bool Weapons::IsBlacklistedWeapon(int weaponID)
 {
-	switch (modelID)
+	switch (weaponID)
 	{
 	case 13:
 		return !Config::WeaponRandomizer::RemoteGrenadeEnabled;
