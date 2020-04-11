@@ -1,5 +1,16 @@
 #include "Weapons.h"
 
+std::vector<int> Weapons::WeaponGroups[] =
+{
+	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 34, 36}, // Unarmed, BrassKnuckle, melee, Detonator, Camera
+	{12, 13, 14, 15, 16}, // throwables
+	{17, 18}, // pistols
+	{19, 20, 21}, // shotguns
+	{22, 23, 24, 25}, // submachine guns
+	{26, 27}, // assault rifles
+	{28, 29}, // sniper rifles
+	{30, 31, 32, 33, 35} // heavy weapons
+};
 int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, eWeaponType weapon, int ammo, bool likeUnused)
 {
 	if (ped->IsPlayer() || ped->m_nModelIndex == -1)
