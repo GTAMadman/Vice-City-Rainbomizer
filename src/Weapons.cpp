@@ -53,7 +53,7 @@ int Weapons::GetRandomWeapon()
 	if (Config::WeaponRandomizer::WeightedWeaponRandomizationEnabled)
 	{
 		int weaponGroup = RandomNumber(0, 7);
-		weapon = WeaponGroups[weaponGroup][RandomNumber(0, WeaponGroups[weaponGroup].size()];
+		weapon = WeaponGroups[weaponGroup][RandomNumber(0, WeaponGroups[weaponGroup].size() - 1];
 	}
 	else
 		weapon = RandomNumber(0, 36);
