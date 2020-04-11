@@ -8,9 +8,8 @@ int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, eWeaponType w
 		return weapon;
 	}
 
-	int newWeapon;
-	while ((newWeapon = GetRandomWeapon()), IsBlacklistedWeapon(newWeapon));
-	
+	int newWeapon = GetRandomWeapon();
+
 	// Load the weapon model before setting it
 	LoadModel(CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModelId);
 	LoadModel(CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModel2Id);
@@ -49,14 +48,15 @@ void __fastcall Weapons::SetCurrentWeapon(CPed* ped, void* edx, eWeaponType weap
 }
 int Weapons::GetRandomWeapon()
 {
-	int weapon;
+	int weapon = 0;
 	if (Config::WeaponRandomizer::WeightedWeaponRandomizationEnabled)
 	{
 		int weaponGroup = RandomNumber(0, 7);
-		weapon = WeaponGroups[weaponGroup][RandomNumber(0, WeaponGroups[weaponGroup].size() - 1)];
+		while ((weapon = WeaponGroups[weaponGroup][RandomNumber(0, WeaponGroups[weaponGroup].size() - 1)]), IsBlacklistedWeapon(weapon));
+		
 	}
 	else
-		weapon = RandomNumber(0, 36);
+		while ((weapon = RandomNumber(0, 36)), IsBlacklistedWeapon(weapon));
 	return weapon;
 }
 bool Weapons::IsBlacklistedWeapon(int weaponID)
