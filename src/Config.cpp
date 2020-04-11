@@ -273,6 +273,19 @@ void Config::WeaponRandomizer::Read()
 	}
 	for (int i = 0; i < data.size(); i++)
 	{
+		if (data[i].find(this->UnarmedEnabledName) != std::string::npos)
+		{
+			if (data[i].find("true") != std::string::npos)
+			{
+				this->UnarmedEnabled = true;
+				break;
+			}
+			this->UnarmedEnabled = false;
+			break;
+		}
+	}
+	for (int i = 0; i < data.size(); i++)
+	{
 		if (data[i].find(this->RemoteGrenadeEnabledName) != std::string::npos)
 		{
 			if (data[i].find("true") != std::string::npos)
