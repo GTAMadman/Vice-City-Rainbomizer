@@ -56,7 +56,7 @@ void __fastcall Traffic::PedEnterCar(CPed* ped, void* edx)
 {
 	if (ModelInfo::IsRCModel(ped->m_pVehicle->m_nModelIndex))
 	{
-		if (Config::RCVehiclesRandomizer::DriveRCVehiclesEnabled)
+		if (Config::rc.DriveRCVehiclesEnabled)
 			ped->IsPlayer() ? ped->WarpPedIntoCar(ped->m_pVehicle) : ped->QuitEnteringCar();
 		else
 			ped->QuitEnteringCar();
@@ -195,7 +195,7 @@ void Traffic::FixBoatSpawns(CPhysical* entity)
 }
 void Traffic::Initialise()
 {
-	if (Config::TrafficRandomizer::Enabled)
+	if (Config::traffic.Enabled)
 	{
 		plugin::patch::RedirectCall(0x426FA6, ChooseModel);
 		plugin::patch::RedirectCall(0x426F80, ChoosePoliceModel);

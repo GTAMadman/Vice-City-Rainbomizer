@@ -18,7 +18,7 @@ void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* thisScript, void* e
 	int newZ = z;
 
 	/* RC Vehicles can spawn through this function */
-	if (!Config::RCVehiclesRandomizer::Enabled && IsRCModel(origModel))
+	if (!Config::rc.Enabled && IsRCModel(origModel))
 		newModel = origModel;
 
 	if (newModel != origModel)
@@ -540,7 +540,7 @@ std::vector<int> scm::ProcessVehicleTypes(Pattern pattern)
 }
 void scm::Initialise()
 {
-	if (Config::ScriptedVehiclesRandomizer::Enabled)
+	if (Config::script.Enabled)
 	{
 		plugin::patch::RedirectCall(0x44A1FD, ScriptVehicleRandomizer);
 		plugin::patch::RedirectCall(0x42AEB0, CreateRandomizedCab);

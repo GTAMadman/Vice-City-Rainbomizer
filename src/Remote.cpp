@@ -26,7 +26,7 @@ void Remote::GivePlayerRCVehicle(float x, float y, float z, float angle, short m
 }
 void Remote::Initialise()
 {
-	if (Config::RCVehiclesRandomizer::Enabled)
+	if (Config::rc.Enabled)
 	{
 		plugin::patch::RedirectCall(0x6075BD, GivePlayerRCVehicleHooked); // RC Raider + RC Baron
 		plugin::patch::RedirectCall(0x4458FD, GivePlayerRCVehicleHooked); // RC Bandit
