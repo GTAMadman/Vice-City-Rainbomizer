@@ -13,8 +13,6 @@ Config::WeaponRandomizer Config::weapons;
 Config::ColourRandomizer Config::colours;
 Config::VoiceLineRandomizer Config::voice;
 Config::Autosave Config::autosave;
-Config::ScriptedVehiclesRandomizer Config::script;
-Config::RCVehiclesRandomizer Config::rc;
 Config::ParkedVehiclesRandomizer Config::parked;
 
 void ReadConfigBool(const std::string &key, const std::string &data, bool &value)
