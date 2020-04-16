@@ -62,7 +62,7 @@ bool Weapons::IsBlacklistedWeapon(int modelID)
 }
 void Weapons::Initialise()
 {
-	if (Config::WeaponRandomizer::Enabled)
+	if (Config::weapons.Enabled)
 	{
 		// CPed::GiveWeapon
 		for (int addr : {0x406CC7, 0x429A34, 0x429CE5, 0x431C54, 0x452251,

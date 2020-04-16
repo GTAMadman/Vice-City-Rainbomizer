@@ -53,7 +53,7 @@ void* __fastcall Parked::CarparkVehiclesRandomizer(CVehicle* vehicle, void* edx,
 }
 void Parked::Initialise()
 {
-	if (Config::ParkedVehiclesRandomizer::Enabled)
+	if (Config::parked.Enabled)
 	{
 		plugin::patch::RedirectCall(0x5A7163, ParkedVehiclesRandomizer);
 		plugin::patch::RedirectCall(0x45A7B9, CarparkVehiclesRandomizer);

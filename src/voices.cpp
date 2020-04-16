@@ -7,7 +7,7 @@ void __fastcall voices::LoadRandomizedAudio(uint16_t* audio, void* edx, int slot
 	char* sound;
 	int index = RandomNumber(0, sounds.size() - 1);
 
-	if (Config::VoiceLineRandomizer::loopEnabled)
+	if (Config::voice.loopEnabled)
 	{
 		if (text == (std::string)"mobring")
 		{
@@ -39,7 +39,7 @@ void voices::PreloadMissionAudio(uint16_t* audio, int slot, char* text)
 }
 void voices::Initialise()
 {
-	if (Config::VoiceLineRandomizer::Enabled)
+	if (Config::voice.Enabled)
 	{
 		plugin::patch::RedirectCall(0x45AB6B, LoadRandomizedAudio);
 

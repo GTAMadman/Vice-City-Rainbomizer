@@ -19,7 +19,7 @@ int Colours::GetColour(int pattern, int rgb)
 }
 void* __fastcall Colours::RandomizeColours(CRGBA* colour, void* edx, int r, int g, int b, int a)
 {
-	if (Config::ColourRandomizer::rainbowTextEnabled)
+	if (Config::colours.rainbowTextEnabled)
 	{
 		CRGBA rainbow = GetRainbowColour(r, g, b);
 		if (r != g && g != b)
@@ -43,7 +43,7 @@ void* __fastcall Colours::RandomizeColours(CRGBA* colour, void* edx, int r, int 
 		int pattern = r + b + g;
 		if (GetColour(pattern, 0) == 0)
 		{
-			if (Config::ColourRandomizer::vibrantOnlyEnabled)
+			if (Config::colours.vibrantOnlyEnabled)
 			{
 				CRGBA vibrantColour = GetVibrantColour();
 
@@ -77,7 +77,7 @@ void* __fastcall Colours::RandomizeColours(CRGBA* colour, void* edx, int r, int 
 /* Had to put armour into it's own hooked function due to some issues with it */
 void* __fastcall Colours::RandomizeArmourColours(CRGBA* colour, void* edx, int r, int g, int b, int a)
 {
-	if (Config::ColourRandomizer::rainbowTextEnabled)
+	if (Config::colours.rainbowTextEnabled)
 	{
 		CRGBA rainbow = GetRainbowColour(r, g, b);
 		colour->r = rainbow.r;
@@ -88,7 +88,7 @@ void* __fastcall Colours::RandomizeArmourColours(CRGBA* colour, void* edx, int r
 	else
 	{
 		int pattern = r + b + g;
-		if (Config::ColourRandomizer::vibrantOnlyEnabled)
+		if (Config::colours.vibrantOnlyEnabled)
 		{
 			CRGBA vibrantColour = GetVibrantColour();
 
@@ -232,20 +232,20 @@ void __fastcall Colours::ScriptVehicleColourRandomizer(CRunningScript* script, v
 }
 void Colours::Initialise()
 {
-	if (Config::ColourRandomizer::vehicleEnabled)
+	if (Config::colours.vehicleEnabled)
 	{
 		// Choose Vehicle Colour
 		plugin::patch::RedirectJump(0x579190, ChooseVehicleColour);
 		plugin::patch::RedirectCall(0x4A4CBF, RandomizeColourTable);
 		plugin::patch::RedirectCall(0x458337, ScriptVehicleColourRandomizer);
 	}
-	if (Config::ColourRandomizer::textEnabled)
+	if (Config::colours.textEnabled)
 	{
 		// Text Colours
 		plugin::patch::RedirectJump(0x541570, RandomizeColours);
 		plugin::patch::RedirectCall(0x558E2A, RandomizeArmourColours); // Armour value
 		plugin::patch::RedirectCall(0x558F06, RandomizeArmourColours); // Armour icon
 	}
-	if (Config::ColourRandomizer::markersEnabled)
+	if (Config::colours.markersEnabled)
 		plugin::patch::RedirectCall(0x570BDF, RandomizeMarkerColours);
 }

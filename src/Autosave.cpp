@@ -7,7 +7,7 @@ void __fastcall Autosave::RequestAutosave(CRunningScript* script, void* edx, int
 
 	if (opcode == 78 && script->m_bIsMission && ShouldSave)
 	{
-		int slot = Config::Autosave::slot;
+		int slot = Config::autosave.slot;
 		bool inVehicle = FindPlayerPed()->m_bInVehicle;
 
 		script->m_bIsActive = false;
@@ -44,7 +44,7 @@ char Autosave::ProcessCommands0to99(CRunningScript* script, int opcode)
 }
 void Autosave::Initialise()
 {
-	if (Config::Autosave::Enabled)
+	if (Config::autosave.Enabled)
 	{
 		plugin::patch::RedirectCall(0x44FC32, RequestAutosave);
 		plugin::patch::RedirectCall(0x456992, SetTotalNumberMissions);

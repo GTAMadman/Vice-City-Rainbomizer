@@ -1,77 +1,66 @@
 #pragma once
 #include "default_config.h"
-#include <fstream>
-#include <filesystem>
-#include <vector>
 #include <string>
 
 class Config
 {
-private:
-	static std::string ConfigName;
 public:
 	static void Initialise();
-	struct ScriptedVehiclesRandomizer
+
+	static struct ScriptedVehiclesRandomizer
 	{
-		std::string Name = "ScriptVehiclesRandomizer";
-		static bool Enabled;
-		void Read();
-	};
-	struct RCVehiclesRandomizer
+		bool Enabled;
+		void Read(const std::string &line);
+	} script;
+
+	static struct RCVehiclesRandomizer
 	{
-		std::string Name = "RandomizeRCVehicles";
-		std::string DriveRCVehiclesName = "AllowPlayerToDriveRCVehicles";
-		static bool Enabled;
-		static bool DriveRCVehiclesEnabled;
-		void Read();
-	};
+		bool Enabled;
+		bool DriveRCVehiclesEnabled;
+		void Read(const std::string &line);
+	} rc;
+
 	struct ParkedVehiclesRandomizer
 	{
-		std::string Name = "ParkedVehiclesRandomizer";
-		static bool Enabled;
-		void Read();
-	};
-	struct TrafficRandomizer
+		bool Enabled;
+		void Read(const std::string &line);
+	} parked;
+
+	static struct TrafficRandomizer
 	{
-		std::string Name = "TrafficRandomizer";
-		static bool Enabled;
-		void Read();
-	};
-	struct WeaponRandomizer
+		bool Enabled;
+		void Read(const std::string &line);
+	} traffic;
+
+	static struct WeaponRandomizer
 	{
-		std::string Name = "WeaponRandomizer";
-		static bool Enabled;
-		void Read();
-	};
-	struct ColourRandomizer
+		bool Enabled;
+		void Read(const std::string &line);
+	} weapons;
+
+	static struct ColourRandomizer
 	{
-		std::string vehicleName = "RandomizeVehicleColours";
-		std::string textName = "RandomizeTextColours";
-		std::string vibrantOnlyName = "VibrantStaticTextColoursOnly";
-		std::string rainbowTextName = "RainbowTextColours";
-		std::string markersText = "RandomizeMarkerColours";
-		static bool vehicleEnabled;
-		static bool textEnabled;
-		static bool vibrantOnlyEnabled;
-		static bool rainbowTextEnabled;
-		static bool markersEnabled;
-		void Read();
-	};
-	struct VoiceLineRandomizer
+		bool vehicleEnabled;
+		bool textEnabled;
+		bool vibrantOnlyEnabled;
+		bool rainbowTextEnabled;
+		bool markersEnabled;
+		void Read(const std::string &line);
+	} colours;
+
+	static struct VoiceLineRandomizer
 	{
-		std::string Name = "VoiceLineRandomizer";
-		std::string loopName = "LoopPhoneRingtone";
-		static bool Enabled;
-		static bool loopEnabled;
-		void Read();
-	};
-	struct Autosave
+		bool Enabled;
+		bool loopEnabled;
+		void Read(const std::string &line);
+	} voice;
+
+	static struct Autosave
 	{
-		std::string autosaveName = "Autosave =";
-		std::string slotName = "Slot";
-		static int slot;
-		static bool Enabled;
-		void Read();
-	};
+		int slot = 8;
+		bool Enabled;
+		void Read(const std::string &line);
+	} autosave;
+	
 	static void WriteConfig();
 };
