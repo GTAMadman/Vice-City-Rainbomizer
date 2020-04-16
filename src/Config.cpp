@@ -13,17 +13,20 @@ Config::WeaponRandomizer Config::weapons;
 Config::ColourRandomizer Config::colours;
 Config::VoiceLineRandomizer Config::voice;
 Config::Autosave Config::autosave;
+Config::ScriptedVehiclesRandomizer Config::script;
+Config::RCVehiclesRandomizer Config::rc;
+Config::ParkedVehiclesRandomizer Config::parked;
 
 void ReadConfigBool(const std::string &key, const std::string &data, bool &value)
 {
-	if(data[i].find(key) != std::string::npos)
-		value = data[i].find("true") != std::string::npos;
+	if(data.find(key) != std::string::npos)
+		value = data.find("true") != std::string::npos;
 }
 
 template<typename F>
 void ReadConfigCustom(const std::string &key, const std::string &data, F &pred)
 {
-	if(data[i].find(key) != std::string::npos)
+	if(data.find(key) != std::string::npos)
 		pred();
 }
 
@@ -35,6 +38,7 @@ void Config::ScriptedVehiclesRandomizer::Read(const std::string &line)
 void Config::RCVehiclesRandomizer::Read(const std::string &line)
 {
 	ReadConfigBool("RandomizeRCVehicles", line, Enabled);
+	ReadConfigBool("AllowPlayerToDriveRCVehicles", line, DriveRCVehiclesEnabled);
 }
 void Config::ParkedVehiclesRandomizer::Read(const std::string &line)
 {
@@ -64,10 +68,10 @@ void Config::VoiceLineRandomizer::Read(const std::string &line)
 void Config::Autosave::Read(const std::string &line)
 {
 	ReadConfigBool("Autosave", line, Enabled);
-	ReadConfigCustom("Slot", line, [this] {
+	ReadConfigCustom("Slot", line, [line, this] {
 		for (int x = 1; x < 9; x++)
 			{
-				if (data[i].find(std::to_string(x)) != std::string::npos)
+				if (line.find(std::to_string(x)) != std::string::npos)
 				{
 					this->slot = x;
 					break;

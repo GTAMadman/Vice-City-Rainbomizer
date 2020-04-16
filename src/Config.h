@@ -20,7 +20,7 @@ public:
 		void Read(const std::string &line);
 	} rc;
 
-	struct ParkedVehiclesRandomizer
+	static struct ParkedVehiclesRandomizer
 	{
 		bool Enabled;
 		void Read(const std::string &line);

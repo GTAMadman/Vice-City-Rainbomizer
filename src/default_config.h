@@ -1,5 +1,5 @@
 #pragma once
-const char default_config[] =
+const char default_config[]
 = R"(
 # GTA Vice City Rainbomizer Configuration #
 
