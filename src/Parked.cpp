@@ -11,24 +11,41 @@ void __fastcall Parked::ParkedVehiclesRandomizer(CCarGenerator* gen)
 		while ((newModel = RandomNumber(130, 236)), !CModelInfo::IsBoatModel(newModel));
 
 		gen->m_nModelId = (eVehicleModel)newModel;
+
 		gen->DoInternalProcessing();
+		gen->m_nModelId = (eVehicleModel)oldModel;
 		return;
 	}
 
 	// Randomize any type of vehicle
-	while ((newModel = RandomNumber(130, 236)), ModelInfo::IsBlacklistedVehicle(newModel));
+	while ((newModel = RandomNumber(130, 236)), ModelInfo::IsMiscVehicle(newModel)
+		|| ModelInfo::IsBlacklistedVehicle(newModel));
 
 	gen->m_nModelId = (eVehicleModel)newModel;
+
 	gen->DoInternalProcessing();
+	gen->m_nModelId = (eVehicleModel)oldModel;
 }
 void* __fastcall Parked::CarparkVehiclesRandomizer(CVehicle* vehicle, void* edx, int model, char createdBy)
 {
 	int newModel;
+	for (int i = 0; i < 21; i++)
+	{
+		newModel = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)];
+		if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel)
+			|| newModel < 130 || newModel > 236)
+			continue;
 
-	while ((newModel = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)],
-		ModelInfo::IsBlacklistedVehicle(newModel)) || newModel < 130 || newModel > 236);
+		if (!IsModelLoaded(newModel))
+			newModel = model;
+	}
 
-	if (CModelInfo::IsBoatModel(newModel))
+	// Additional check just in case the loop ended with an invalid model
+	if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel)
+		|| newModel < 130 || newModel > 236 || !IsModelLoaded(newModel))
+		newModel = model;
+
+	if (ModelInfo::IsBoatModel(newModel))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(newModel, createdBy);
 
 	if (CModelInfo::IsPlaneModel(newModel))
@@ -43,12 +60,6 @@ void* __fastcall Parked::CarparkVehiclesRandomizer(CVehicle* vehicle, void* edx,
 	if (CModelInfo::IsCarModel(newModel))
 		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(newModel, createdBy);
 
-	// if the vehicle isn't loaded, return a police car
-	if (CStreaming::ms_aInfoForModel[newModel].m_nLoadState != 1)
-	{
-		newModel = 156;
-		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(newModel, createdBy);
-	}
 	return vehicle;
 }
 void Parked::Initialise()

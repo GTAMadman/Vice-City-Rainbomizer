@@ -30,7 +30,7 @@ void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* thisScript, void* e
 	// If the vehicle isn't loaded, return the original
 	if (!IsModelLoaded(newModel))
 		newModel = origModel;
-	
+
 	CTheScripts::ScriptParams[0].iParam = newModel;
 
 	// Change the coordinates
@@ -88,9 +88,9 @@ void* __fastcall scm::CreateRandomizedCab(CVehicle* vehicle, void* edx, int mode
 {
 	int newModel;
 
-	while ((newModel = RandomNumber(130, 236)), ModelInfo::IsBlacklistedVehicle(newModel) || 
-		ModelInfo::IsRCModel(newModel) || CModelInfo::IsBoatModel(newModel) || newModel == 155 ||
-		newModel == 178 || newModel == 215); // Hunter, Pizza Boy, Baggage
+	while ((newModel = RandomNumber(130, 236)), ModelInfo::IsMiscVehicle(newModel) || 
+		ModelInfo::IsBlacklistedVehicle(newModel) || ModelInfo::IsRCModel(newModel) || CModelInfo::IsBoatModel(newModel) || 
+		newModel == 155 || newModel == 178 || newModel == 215); // Hunter, Pizza Boy, Baggage
 
 	LoadModel(newModel);
 
@@ -212,6 +212,14 @@ void scm::InitialisePatterns()
 	pattern = { .vehicle = {217}, .allowedType = {"car", "heli", "rc"}, .thread = {"baron2"} };
 	Patterns.push_back(pattern);
 
+	// Phnom Pehn '86 - Sparrow
+	pattern = { .vehicle = {199}, .allowedType = {"car", "heli", "rc"}, .thread = {"baron2"} };
+	Patterns.push_back(pattern);
+
+	// Phnom Pehn '86 - Sea Sparrow
+	pattern = { .vehicle = {177}, .allowedType = {"car", "heli", "rc"}, .thread = {"baron2"} };
+	Patterns.push_back(pattern);
+
 	// Hog Tied
 	pattern = { .vehicle = {166}, .allowed = {130, 131, 132, 134, 135, 140, 141, 142, 143, 
 		145, 147, 148, 149, 150, 151, 152, 153, 154, 156, 159, 164, 168, 169, 170, 172, 
@@ -233,8 +241,20 @@ void scm::InitialisePatterns()
 	.move = {0, -10, 0}, .moveType = {"heli"} };
 	Patterns.push_back(pattern);
 
+	// Back Alley Brawl
+	pattern = { .vehicle = {141}, .denied = {178, 215}, .allowedType {"car", "bike"}, .thread = {"lawyer2"} };
+	Patterns.push_back(pattern);
+
+	// Guardian Angels - Diaz's Admiral on arrival to the deal
+	pattern = { .vehicle = {175}, .allowed = {167, 161}, .coords = {463, -461, 9}, .doors = {4} };
+	Patterns.push_back(pattern);
+
 	// Supply & Demand - Squalo
-	pattern = { .vehicle = {176}, .denied = {190}, .allowedType = {"boat"}, .coords = {-378, -660, 5} };
+	pattern = { .vehicle = {176}, .allowed = {182, 202, 223, 160, 176}, .coords = {-378, -660, 5} };
+	Patterns.push_back(pattern);
+
+	// The Fastest Boat - Squalo
+	pattern = { .vehicle = {176}, .allowed = {182, 202, 223, 160, 176, 190}, .thread = {"baron3"} };
 	Patterns.push_back(pattern);
 
 	// All Hands on Deck - Maverick
@@ -258,7 +278,7 @@ void scm::InitialisePatterns()
 	Patterns.push_back(pattern);
 
 	// Naval Engagement - Jetmax
-	pattern = { .vehicle = {223}, .denied = {190}, .coords = {-722, -1163, 5} };
+	pattern = { .vehicle = {223}, .denied = {190}, .allowedType = {"boat"}, .coords = {-722, -1163, 5} };
 	Patterns.push_back(pattern);
 
 	// Trojan Voodoo
@@ -266,7 +286,15 @@ void scm::InitialisePatterns()
 	Patterns.push_back(pattern);
 
 	// V.I.P - Taxi
-	pattern = { .vehicle = {150}, .denied = {178, 215}, .coords = {-546, -474, 10} };
+	pattern = { .vehicle = {150}, .denied = {178, 215}, .allowedType = {"car", "bike"}, .coords = {-546, -474, 10} };
+	Patterns.push_back(pattern);
+
+	// Martha's Mug Shot - Sparrow
+	pattern = { .vehicle = {199}, .allowedType = {"car", "bike", "heli"}, .coords = {-61, 1019, 9} };
+	Patterns.push_back(pattern);
+
+	// G-Spotlight - PCJ
+	pattern = { .vehicle = {191}, .allowedType = {"bike"}, .thread = {"porno4"} };
 	Patterns.push_back(pattern);
 }
 /* I've only built the pattern system to work with the necessary patterns for the main game.

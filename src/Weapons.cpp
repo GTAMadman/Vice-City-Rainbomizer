@@ -1,5 +1,16 @@
 #include "Weapons.h"
 
+std::vector<int> Weapons::WeaponGroups[8] =
+{
+	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 34, 36}, // Melee
+	{12, 13, 14, 15, 16}, // Projectiles
+	{17, 18}, // Pistols
+	{19, 20, 21}, // Shotguns
+	{22, 23, 24, 25}, // Submachine guns
+	{26, 27}, // Assault rifles
+	{28, 29}, // Sniper rifles
+	{30, 31, 32, 33, 35} // Heavy weapons
+};
 int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, eWeaponType weapon, int ammo, bool likeUnused)
 {
 	if (ped->IsPlayer() || ped->m_nModelIndex == -1)
@@ -8,12 +19,17 @@ int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, eWeaponType w
 		return weapon;
 	}
 
-	int newWeapon;
-	while ((newWeapon = RandomNumber(1, 36)), IsBlacklistedWeapon(newWeapon));
+	int newWeapon = GetRandomWeapon();
 	
+	int weaponModel = CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModelId;
+	int weaponModel2 = CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModel2Id;
+
 	// Load the weapon model before setting it
-	LoadModel(CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModelId);
-	LoadModel(CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModel2Id);
+	if (!IsModelLoaded(weaponModel))
+		LoadModel(weaponModel);
+
+	if (!IsModelLoaded(weaponModel2))
+		LoadModel(weaponModel2);
 
 	int origSlot = CWeaponInfo::GetWeaponInfo((eWeaponType)weapon)->m_WeaponSlot;
 	int newSlot = CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_WeaponSlot;
@@ -47,18 +63,40 @@ void __fastcall Weapons::SetCurrentWeapon(CPed* ped, void* edx, eWeaponType weap
 	}
 	ped->SetCurrentWeapon(ped->m_nActiveWeaponSlot);
 }
-bool Weapons::IsBlacklistedWeapon(int modelID)
+int Weapons::GetRandomWeapon()
 {
-	switch (modelID)
+	int weapon = 0;
+	if (Config::weapons.ReduceMeleeWeaponsEnabled)
 	{
-	case 0:
-	case 13:
+		int weaponGroup = RandomNumber(0, 7);
+		while ((weapon = WeaponGroups[weaponGroup][RandomNumber(0, WeaponGroups[weaponGroup].size() - 1)], IsBlacklistedWeapon(weapon)));
+
+		return weapon;
+	}
+	while ((weapon = RandomNumber(1, 36), IsBlacklistedWeapon(weapon)));
+	return weapon;
+}
+bool Weapons::IsBlacklistedWeapon(int weaponID)
+{
+	switch (weaponID)
+	{
 	case 16:
-	case 34:
+		if (Config::weapons.RocketEnabled)
+			return false;
+	case 13:
 	case 35:
 		return true;
 	}
 	return false;
+}
+void Weapons::FixPedsWithRPG(CProjectileInfo* projectile)
+{
+	if (projectile->ms_apProjectile[0].pSource)
+	{
+		projectile->Update();
+		return;
+	}
+	projectile->RemoveAllProjectiles();
 }
 void Weapons::Initialise()
 {
@@ -78,6 +116,8 @@ void Weapons::Initialise()
 			0x51C841, 0x51C85B, 0x520B30, 0x534472, 0x53B70B, 0x53B9C8, 0x5D49D3,
 			0x603493, 0x603FBC, 0x6300BB})
 			plugin::patch::RedirectCall(addr, SetCurrentWeapon);
+
+		plugin::patch::RedirectCall(0x5D4DBA, FixPedsWithRPG);
 
 		/* Used for getting current thread.
 		Currently only used for weapon randomizer */

@@ -21,10 +21,67 @@ std::string ModelInfo::CheckVehicleModel(int modelID)
 
 	return "unknown";
 }
+/* I've created my own function for this as a "hack" to prevent a crash */
+bool ModelInfo::IsBoatModel(int modelID)
+{
+	switch (modelID)
+	{
+	case 136:
+	case 160:
+	case 176:
+	case 182:
+	case 183:
+	case 184:
+	case 190:
+	case 202:
+	case 203:
+	case 214:
+	case 223:
+		return true;
+	}
+	return false;
+}
+bool ModelInfo::IsMiscVehicle(int modelID)
+{
+	switch (modelID)
+	{
+	case 180: // Air Train
+	case 181: // Dead Dodo
+		return true;
+	}
+	return false;
+}
 bool ModelInfo::IsBlacklistedVehicle(int modelID)
 {
-	if (modelID > 179 && modelID < 182 || modelID == 165)
+	switch (modelID)
+	{
+	case 165:
 		return true;
+	case 180:
+		if (Config::traffic.airTrain)
+			return false;
+	case 181:
+		if (Config::traffic.deadDodo)
+			return false;
+		return true;
+	}
+	return false;
+}
+bool ModelInfo::IsEmergencyVehicle(int modelID)
+{
+	switch (modelID)
+	{
+	case 137:
+	case 146:
+	case 147:
+	case 156:
+	case 157:
+	case 162:
+	case 163:
+	case 220:
+	case 236:
+		return true;
+	}
 	return false;
 }
 bool ModelInfo::IsHeliModel(int modelID)

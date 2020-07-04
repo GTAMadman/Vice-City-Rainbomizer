@@ -13,6 +13,7 @@
 #include "CPlane.h"
 #include "CHeli.h"
 #include "CBike.h"
+#include "CMatrix.h"
 
 class Traffic : Functions
 {
@@ -21,10 +22,11 @@ public:
 private:
 	static void AddPoliceCarOccupants(CVehicle* vehicle);
 	static int ChooseModelToLoad();
-	static int ChooseModel();
-	static int ChoosePoliceModel();
+	static int RandomizeTraffic();
+	static int RandomizePoliceTraffic();
 	static void* __fastcall FixTrafficVehicles(CVehicle* vehicle, void* edx, int model, char createdBy);
 	static void* RandomizeCarPeds(ePedType type, int model, CVector posn, int arg3);
+	static void* __fastcall RandomizeRoadblocks(CVehicle* vehicle, void* edx, int model, char createdBy);
 	static void FixEmptyPoliceCars(CVehicle* vehicle);
 	static void FixBoatSpawns(CPhysical* entity);
 	static void __fastcall PedExitCar(CPed* ped, void* edx);
@@ -32,4 +34,6 @@ private:
 	static void __fastcall SetExitCar(CPed* ped, void* edx, CVehicle* vehicle, int value);
 	static int __fastcall FixPedKilledInRCVehicle(CPed* ped, void* edx);
 	static bool FixDeadPedsInFrontOfRCVehicles(int modelID);
+
+	static void __fastcall FixRoadblockCrash(CMatrix* matrix);
 };

@@ -7,6 +7,8 @@
 #include "Weapons.h"
 #include "Colours.h"
 #include "voices.h"
+#include "Pickups.h"
+#include "Clothes.h"
 #include "Autosave.h"
 
 class Rainbomizer {
@@ -20,6 +22,8 @@ public:
 		Weapons::Initialise();
 		Colours::Initialise();
 		voices::Initialise();
+		Pickups::Initialise();
+		Clothes::Initialise();
 		Autosave::Initialise();
 	}
 } rainbomizer;

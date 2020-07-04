@@ -1,7 +1,6 @@
 #pragma once
 const char default_config[]
-= R"(
-# GTA Vice City Rainbomizer Configuration #
+= R"(# GTA Vice City Rainbomizer Configuration #
 
 ###########################################
 # Script Vehicles Randomizer
@@ -22,18 +21,32 @@ ParkedVehiclesRandomizer = true
 
 ###########################################
 # Colour Randomizer
+
 RandomizeVehicleColours = true
-RandomizeTextColours = true
+RandomizeHUDColours = true
 RandomizeMarkerColours = true
 
-# If both below are false with text colours enabled, they will be normal random colours
+RandomizePickupColours = true
+RandomizeLazerScopeColour = true
+RandomizeExplosionColours = true
 
-RainbowTextColours = false
-VibrantStaticTextColoursOnly = false
+# If both below are false with HUD colours enabled, they will be normal random colours
+
+RainbowHUDColours = false
+VibrantStaticHUDColours = false
 
 ###########################################
 # Traffic Randomizer
 TrafficRandomizer = true
+
+# Randomizes police vehicles which intercept you on some roads
+RandomizeScriptedCopCars = true
+
+RandomizeRoadblocks = true
+
+# Additional vehicles
+DeadDodo = true
+AirTrain = true
 
 ###########################################
 # Weapon Randomizer
@@ -49,10 +62,36 @@ ReduceMeleeWeapons = false
 AllowRocketMissile = false
 
 ###########################################
-# Voice Line Randomizer
+# Pickups Randomizer
 
-# Experimental - subtitles do not match randomized audio
-VoiceLineRandomizer = false
+# Experimental - randomizes weapons, health, armour, adrenaline, bribe stars and mission pickups
+# This feature may cause some missions to be impossible to complete
+ 
+PickupsRandomizer = false
+
+# Randomizes the weapons dropped by dead peds
+RandomizePedWeaponDrops = false
+
+# Allowed pickup types
+Weapons = true
+Health = true
+Armour = true
+Adrenaline = true
+Bribes = true
+Cellphone = true
+Briefcase = true
+Keycard = true
+
+###########################################
+# Clothes Randomizer
+ClothesRandomizer = true
+
+###########################################
+# Voice Line Randomizer
+VoiceLineRandomizer = true
+
+# Matches the subtitles to the randomized voice line
+MatchSubtitles = true
 
 # Phonecall ringtones will loop the same sound over being re-randomized
 LoopPhoneRingtone = true
@@ -60,5 +99,4 @@ LoopPhoneRingtone = true
 ###########################################
 # Autosave
 Autosave = true
-Slot = 8
-)";
+Slot = 8)";

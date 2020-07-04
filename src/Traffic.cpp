@@ -2,23 +2,11 @@
 
 int Traffic::ChooseModelToLoad()
 {
-	/* Loads a random vehicle model into memory */
-	int newModel;
-	for (int i = 0; i < 21; i++)
-	{
-		newModel = RandomNumber(130, 236);
-		if (ModelInfo::IsBlacklistedVehicle(newModel))
-			continue;
-
-		return newModel;
-	}
-	return -1;
+	return RandomNumber(130, 236);
 }
-int Traffic::ChooseModel()
+int Traffic::RandomizeTraffic()
 {
-	/* From the randomly loaded vehicles, this will choose a model to spawn in traffic */
 	int model;
-
 	if (*ms_numVehiclesLoaded < 1) // Added as a safety precaution
 		return -1;
 
@@ -34,23 +22,25 @@ int Traffic::ChooseModel()
 
 		return model;
 	}
-	return -1;
 }
-int Traffic::ChoosePoliceModel()
+int Traffic::RandomizePoliceTraffic()
 {
 	int model;
-
 	if (*ms_numVehiclesLoaded < 1) // Added as a safety precaution
 		return 156;
 
-	while ((model = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)],
-		ModelInfo::IsBlacklistedVehicle(model)) || model < 130 || model > 236 || model == 178 ||
-		model == 215); // Pizza Boy & Baggage - 1 seater vehicles which cause crashes for cops
+	for (int i = 0; i < 21; i++)
+	{
+		model = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)];
+		if (ModelInfo::IsMiscVehicle(model) || ModelInfo::IsBlacklistedVehicle(model) || model < 130 || model > 236)
+			continue;
 
-	if (!IsModelLoaded(model))
-		return 156;
+		if (!IsModelLoaded(model))
+			return 156;
 
-	return model;
+		return model;
+	}
+	return 156;
 }
 void __fastcall Traffic::PedEnterCar(CPed* ped, void* edx)
 {
@@ -119,14 +109,60 @@ void* Traffic::RandomizeCarPeds(ePedType type, int model, CVector posn, int arg3
 	}
 	int loadModel = model;
 
-	if (CStreaming::ms_aInfoForModel[loadModel].m_nLoadState != 1)
+	if (!IsModelLoaded(loadModel))
 		LoadModel(loadModel);
 
 	return CPopulation::AddPed(type, model, posn, arg3);
 }
+void* __fastcall Traffic::RandomizeRoadblocks(CVehicle* vehicle, void* edx, int model, char createdBy)
+{
+	int newModel;
+	for (int i = 0; i < 21; i++)
+	{
+		newModel = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)];
+		if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel) ||
+			newModel < 130 || newModel > 236)
+			continue;
+
+		break;
+	}
+
+	// Additional check just in case the loop ended with an invalid model
+	if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel) ||
+		newModel < 130 || newModel > 236)
+		newModel = model;
+
+	if (ModelInfo::IsBoatModel(newModel))
+		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(newModel, createdBy);
+
+	if (CModelInfo::IsPlaneModel(newModel))
+		reinterpret_cast<CPlane*>(vehicle)->CPlane::CPlane(newModel, createdBy);
+
+	if (CModelInfo::IsHeliModel(newModel))
+		reinterpret_cast<CHeli*>(vehicle)->CHeli::CHeli(newModel, createdBy);
+
+	if (CModelInfo::IsBikeModel(newModel))
+		reinterpret_cast<CBike*>(vehicle)->CBike::CBike(newModel, createdBy);
+
+	if (!IsModelLoaded(newModel))
+		newModel = 156;
+
+	if (CModelInfo::IsCarModel(newModel))
+		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(newModel, createdBy);
+
+	vehicle->m_nState = eEntityStatus::STATUS_PHYSICS;
+
+	return vehicle;
+}
 void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int model, char createdBy)
 {
-	if (CModelInfo::IsBoatModel(model))
+	if (ModelInfo::IsMiscVehicle(model))
+	{
+		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(model, createdBy);
+		return vehicle;
+	}
+
+	if (ModelInfo::IsBoatModel(model))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(model, createdBy);
 
 	if (CModelInfo::IsPlaneModel(model))
@@ -140,9 +176,6 @@ void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int m
 
 	if (CModelInfo::IsCarModel(model))
 		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(model, createdBy);
-
-	if (CStreaming::ms_aInfoForModel[vehicle->m_nModelIndex].m_nLoadState != 1)
-		LoadModel(vehicle->m_nModelIndex); // Added for safety
 
 	return vehicle;
 }
@@ -160,7 +193,7 @@ void Traffic::FixEmptyPoliceCars(CVehicle* vehicle)
 }
 void Traffic::FixBoatSpawns(CPhysical* entity)
 {
-	if (CModelInfo::IsBoatModel(entity->m_nModelIndex))
+	if (CModelInfo::IsBoatModel(entity->m_nModelIndex) || ModelInfo::IsEmergencyVehicle(entity->m_nModelIndex))
 	{
 		CVector posn = entity->GetPosition();
 		switch (entity->m_nModelIndex)
@@ -193,19 +226,36 @@ void Traffic::FixBoatSpawns(CPhysical* entity)
 	}
 	CWorld::Add(entity);
 }
+void __fastcall Traffic::FixRoadblockCrash(CMatrix* matrix)
+{
+	if (!matrix)
+		return;
+
+	matrix->UpdateRW();
+}
 void Traffic::Initialise()
 {
 	if (Config::traffic.Enabled)
 	{
-		plugin::patch::RedirectCall(0x426FA6, ChooseModel);
-		plugin::patch::RedirectCall(0x426F80, ChoosePoliceModel);
-		plugin::patch::RedirectCall(0x426BA4, ChoosePoliceModel);
+		plugin::patch::RedirectCall(0x426FA6, RandomizeTraffic);
+		plugin::patch::RedirectCall(0x426F80, RandomizePoliceTraffic);
+		plugin::patch::RedirectCall(0x426BA4, RandomizePoliceTraffic);
 		plugin::patch::RedirectCall(0x4098D3, ChooseModelToLoad);
 		plugin::patch::RedirectCall(0x42773A, FixTrafficVehicles);
 		plugin::patch::RedirectCall(0x53AC31, RandomizeCarPeds);
 		plugin::patch::RedirectCall(0x428D96, FixEmptyPoliceCars);
 		plugin::patch::RedirectCall(0x428FC8, FixDeadPedsInFrontOfRCVehicles);
 		plugin::patch::RedirectCall(0x428D7B, FixBoatSpawns);
+
+		if (Config::traffic.scriptedCopCarsEnabled)
+		{
+			plugin::patch::RedirectCall(0x633213, RandomizeRoadblocks);
+			for (int addr : {0x6334CE, 0x63368A, 0x6337CB, 0x633AFB, 0x633C11,
+				0x633D4A, 0x633E60})
+				plugin::patch::RedirectCall(addr, FixEmptyPoliceCars);
+		}
+		if (Config::traffic.roadblocksEnabled)
+			plugin::patch::RedirectCall(0x443924, RandomizeRoadblocks);
 	}
 	/* RC Vehicles Fixes - initialise these even without traffic being enabled
 	in case something else is enabled which can spawn RC vehicles */
@@ -213,6 +263,7 @@ void Traffic::Initialise()
 	plugin::patch::RedirectCall(0x4D7AB2, PedEnterCar);
 	plugin::patch::RedirectCall(0x4D7ACF, FixPedKilledInRCVehicle);
 	plugin::patch::RedirectCall(0x4D7AC4, FixPedKilledInRCVehicle);
+	plugin::patch::RedirectCall(0x53D2C1, FixRoadblockCrash);
 	for (int addr : {0x51DD88, 0x51DEEA, 0x51DFD1})
 		plugin::patch::RedirectCall(addr, SetExitCar);
 }

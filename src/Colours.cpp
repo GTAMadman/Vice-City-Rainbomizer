@@ -1,6 +1,7 @@
 #include "Colours.h"
 
 std::vector<Colours::Pattern> Colours::Patterns;
+std::vector<Colours::Pattern> Colours::PickupPatterns;
 int Colours::GetColour(int pattern, int rgb)
 {
 	for (int i = 0; i < Patterns.size(); i++)
@@ -13,6 +14,22 @@ int Colours::GetColour(int pattern, int rgb)
 				return Patterns[i].colours[1];
 			if (rgb == 2)
 				return Patterns[i].colours[2];
+		}
+	}
+	return 0;
+}
+int Colours::GetPickupsColour(int pattern, int rgb)
+{
+	for (int i = 0; i < PickupPatterns.size(); i++)
+	{
+		if (PickupPatterns[i].ID == pattern)
+		{
+			if (rgb == 0)
+				return PickupPatterns[i].colours[0];
+			if (rgb == 1)
+				return PickupPatterns[i].colours[1];
+			if (rgb == 2)
+				return PickupPatterns[i].colours[2];
 		}
 	}
 	return 0;
@@ -40,19 +57,19 @@ void* __fastcall Colours::RandomizeColours(CRGBA* colour, void* edx, int r, int 
 	}
 	else
 	{
-		int pattern = r + b + g;
+		int pattern = r + g + b;
 		if (GetColour(pattern, 0) == 0)
 		{
 			if (Config::colours.vibrantOnlyEnabled)
 			{
 				CRGBA vibrantColour = GetVibrantColour();
 
-				Pattern col = { r + g + b, {vibrantColour.r, vibrantColour.g, vibrantColour.b} };
+				Pattern col = { pattern, {vibrantColour.r, vibrantColour.g, vibrantColour.b} };
 				Patterns.push_back(col);
 			}
 			else
 			{
-				Pattern col = { r + g + b, {RandomNumber(1, 255), RandomNumber(1, 255), RandomNumber(1, 255)} };
+				Pattern col = { pattern, {RandomNumber(1, 255), RandomNumber(1, 255), RandomNumber(1, 255)} };
 				Patterns.push_back(col);
 			}
 		}
@@ -117,6 +134,44 @@ void __fastcall Colours::RandomizeMarkerColours(C3dMarker* marker)
 
 	marker->Render();
 	marker->m_colour = original;
+}
+void Colours::RandomizePickupColours(int coronaID, char r, char g, char b, char a, CVector const& posn, float radius,
+	float farClip, char arg8, char flare, char refl, char arg11, char arg12, float normalAngle, bool arg14, float arg15)
+{
+	int pattern = coronaID;
+	if (GetPickupsColour(pattern, 0) == 0)
+	{
+		Pattern col = { pattern, {r, g, b} };
+		PickupPatterns.push_back(col);
+	}
+	int origR = GetPickupsColour(pattern, 0);
+	int origG = GetPickupsColour(pattern, 1);
+	int origB = GetPickupsColour(pattern, 2);
+
+	CRGBA rainbow = GetRainbowColour(origR, origG, origB);
+
+	CCoronas::RegisterCorona(coronaID, rainbow.r, rainbow.g, rainbow.b, a, posn, radius, farClip, arg8, flare,
+		refl, arg11, arg12, normalAngle, arg14, arg15);
+}
+void Colours::RandomizeMiscColours(int coronaID, char r, char g, char b, char a, CVector const& posn, float radius,
+	float farClip, char arg8, char flare, char refl, char arg11, char arg12, float normalAngle, bool arg14, float arg15)
+{
+	static int origR = 200;
+	static int origG = 0;
+	static int origB = 0;
+
+	CRGBA rainbow = GetRainbowColour(origR, origG, origB);
+
+	CCoronas::RegisterCorona(coronaID, rainbow.r, rainbow.g, rainbow.b, a, posn, radius, farClip, arg8, flare,
+		refl, arg11, arg12, normalAngle, arg14, arg15);
+}
+void Colours::RandomizeExplosionColours(int coronaID, char r, char g, char b, char a, CVector const& posn, float radius,
+	float farClip, RwTexture* texture, char flare, char refl, char arg11, char arg12, float normalAngle, bool arg14, float arg15)
+{
+	CRGBA rainbow = GetRainbowColour(r, g, b);
+
+	CCoronas::RegisterCorona(coronaID, rainbow.r, rainbow.g, rainbow.b, a, posn, radius, farClip, texture,
+		flare, refl, arg11, arg12, normalAngle, arg14, arg15);
 }
 CRGBA Colours::GetVibrantColour()
 {
@@ -234,18 +289,33 @@ void Colours::Initialise()
 {
 	if (Config::colours.vehicleEnabled)
 	{
-		// Choose Vehicle Colour
 		plugin::patch::RedirectJump(0x579190, ChooseVehicleColour);
 		plugin::patch::RedirectCall(0x4A4CBF, RandomizeColourTable);
 		plugin::patch::RedirectCall(0x458337, ScriptVehicleColourRandomizer);
 	}
 	if (Config::colours.textEnabled)
 	{
-		// Text Colours
 		plugin::patch::RedirectJump(0x541570, RandomizeColours);
 		plugin::patch::RedirectCall(0x558E2A, RandomizeArmourColours); // Armour value
 		plugin::patch::RedirectCall(0x558F06, RandomizeArmourColours); // Armour icon
 	}
 	if (Config::colours.markersEnabled)
-		plugin::patch::RedirectCall(0x570BDF, RandomizeMarkerColours);
+	{
+		plugin::patch::RedirectCall(0x570BDF, RandomizeMarkerColours); // Mission markers
+		plugin::patch::RedirectCall(0x6313FF, RandomizeMiscColours); // Race markers
+		plugin::patch::RedirectCall(0x458BEE, RandomizeMiscColours); // Race markers
+	}
+	if (Config::colours.pickupsEnabled)
+	{
+		for (int addr : {0x43EF94, 0x43F44B, 0x43F65A, 0x43F757, 0x43F8A8,
+			0x43FF7D, 0x43FFCD, 0x43EA04, 0x43EC84})
+			plugin::patch::RedirectCall(addr, RandomizePickupColours);
+	}
+	if (Config::colours.explosionsEnabled)
+	{
+		for (int addr : {0x5C5011, 0x5C5052, 0x5C5161, 0x5C51A2})
+			plugin::patch::RedirectCall(addr, RandomizeExplosionColours);
+	}
+	if (Config::colours.lazerScopeEnabled)
+		plugin::patch::RedirectCall(0x5CCB84, RandomizeMiscColours);
 }
