@@ -13,6 +13,9 @@ public:
 	static struct ScriptedVehiclesRandomizer
 	{
 		bool Enabled;
+		bool offroadEnabled;
+		bool rcEnabled;
+		bool chopperCheckpointEnabled;
 		void Read(const std::string& line);
 	} script;
 

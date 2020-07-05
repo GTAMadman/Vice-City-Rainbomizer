@@ -22,6 +22,7 @@ int Traffic::RandomizeTraffic()
 
 		return model;
 	}
+	return -1;
 }
 int Traffic::RandomizePoliceTraffic()
 {

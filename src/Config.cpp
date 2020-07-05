@@ -31,6 +31,10 @@ void ReadConfigCustom(const std::string& key, const std::string& data, F& pred)
 void Config::ScriptedVehiclesRandomizer::Read(const std::string& line)
 {
 	ReadConfigBool("ScriptVehiclesRandomizer", line, Enabled);
+
+	ReadConfigBool("OffroadMissions", line, offroadEnabled);
+	ReadConfigBool("RCMissions", line, rcEnabled);
+	ReadConfigBool("ChopperCheckpoints", line, chopperCheckpointEnabled);
 }
 void Config::RCVehiclesRandomizer::Read(const std::string& line)
 {

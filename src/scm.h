@@ -13,12 +13,12 @@
 class scm : Functions, ModelInfo
 {
 private:
-	static void __fastcall ScriptVehicleRandomizer(CRunningScript* thisScript, void* edx, int* arg0, short count);
+	static void __fastcall ScriptVehicleRandomizer(CRunningScript* script, void* edx, int* arg0, short count);
 	static void* __fastcall CreateRandomizedCab(CVehicle* vehicle, void* edx, int modelId, bool createdBy);
-	static void __fastcall FixForcedPlayerVehicleType(CRunningScript* thisScript, void* edx, int* arg0, short count);
-	static void __fastcall FixForcedPedVehicleType(CRunningScript* thisScript, void* edx, int* arg0, short count);
+	static void __fastcall FixForcedPlayerVehicleType(CRunningScript* script, void* edx, int* arg0, short count);
+	static void __fastcall FixForcedPedVehicleType(CRunningScript* script, void* edx, int* arg0, short count);
 	static void* __fastcall OpenBootFix(CAutomobile* vehicle, void* edx);
-	static void __fastcall FixBombsAwayVan(CRunningScript* thisScript, void* edx, int* arg0, short count);
+	static void __fastcall FixBombsAwayVan(CRunningScript* script, void* edx, int* arg0, short count);
 	static void AlloyWheelsFix(int modelID, char* thread);
 	struct Pattern
 	{

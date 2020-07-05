@@ -6,6 +6,12 @@ const char default_config[]
 # Script Vehicles Randomizer
 ScriptVehiclesRandomizer = true
 
+# Allow certain side missions to be activated by any vehicle
+
+OffroadMissions = true # (Trial by Dirt (bikes only), Test Track (cars only), PCJ Playground, Cone Crazy)
+RCMissions = true # (RC Raider Pickup, RC Bandit Race, RC Baron Race)
+ChopperCheckpoints = true # (Will only be activated by helicopters)
+
 ###########################################
 # RC Vehicles Randomizer
 RandomizeRCVehicles = true

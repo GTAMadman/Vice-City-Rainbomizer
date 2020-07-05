@@ -2,9 +2,9 @@
 
 std::vector<scm::Pattern> scm::Patterns;
 std::vector<int> scm::AlloyWheelsVehicles;
-void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* thisScript, void* edx, int* arg0, short count)
+void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* script, void* edx, int* arg0, short count)
 {
-	thisScript->CollectParameters(arg0, count);
+	script->CollectParameters(arg0, count);
 
 	int origModel = CTheScripts::ScriptParams[0].iParam;
 	int newModel = 0;
@@ -22,7 +22,7 @@ void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* thisScript, void* e
 		newModel = origModel;
 
 	if (newModel != origModel)
-		newModel = GetIDBasedOnPattern(origModel, x, y, z, thisScript->m_szName);
+		newModel = GetIDBasedOnPattern(origModel, x, y, z, script->m_szName);
 
 	// Attempt to load the vehicle
 	LoadModel(newModel);
@@ -48,21 +48,21 @@ void __fastcall scm::ScriptVehicleRandomizer(CRunningScript* thisScript, void* e
 	}
 
 	// Added Alloy Wheels Fix here
-	AlloyWheelsFix(newModel, thisScript->m_szName);
+	AlloyWheelsFix(newModel, script->m_szName);
 }
-void scm::FixForcedPlayerVehicleType(CRunningScript* thisScript, void* edx, int* arg0, short count)
+void scm::FixForcedPlayerVehicleType(CRunningScript* script, void* edx, int* arg0, short count)
 {
-	thisScript->CollectParameters(arg0, count);
+	script->CollectParameters(arg0, count);
 	int origModel = CTheScripts::ScriptParams[1].iParam;
 
 	// Alloy Wheels of Steal
-	if (thisScript->m_szName == (std::string)"bike1" && origModel == 193 || origModel == 166)
+	if (script->m_szName == std::string("bike1") && origModel == 193 || origModel == 166)
 	{
 		if (FindPlayerVehicle())
 			CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
 	}
 	// Dirtring
-	if (thisScript->m_szName == (std::string)"kickst" && origModel == 198)
+	if (script->m_szName == std::string("kickst") && origModel == 198)
 	{
 		if (FindPlayerVehicle())
 		CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
@@ -73,13 +73,49 @@ void scm::FixForcedPlayerVehicleType(CRunningScript* thisScript, void* edx, int*
 		if (FindPlayerVehicle())
 			CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
 	}
+
+	if (Config::script.offroadEnabled)
+	{
+		if (origModel == 169 || origModel == 191)
+			if (FindPlayerVehicle())
+				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+
+		/* Separated these and only allowed cars/bikes due to an issue with the checkpoints */
+
+		// Test Track
+		if (origModel == 130)
+			if (FindPlayerVehicle())
+				if (ModelInfo::IsCarModel(FindPlayerVehicle()->m_nModelIndex))
+					CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+
+		// Trial By Dirt
+		if (origModel == 198)
+			if (FindPlayerVehicle())
+				if (CModelInfo::IsBikeModel(FindPlayerVehicle()->m_nModelIndex))
+					CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+	}
+	if (Config::script.rcEnabled)
+	{
+		if (origModel == 189)
+			if (FindPlayerVehicle())
+				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+	}
+	if (Config::script.chopperCheckpointEnabled)
+	{
+		if (origModel == 199)
+		{
+			if (FindPlayerVehicle())
+				if (ModelInfo::IsHeliModel(FindPlayerVehicle()->m_nModelIndex))
+					CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+		}
+	}
 }
-void scm::FixForcedPedVehicleType(CRunningScript* thisScript, void* edx, int* arg0, short count)
+void scm::FixForcedPedVehicleType(CRunningScript* script, void* edx, int* arg0, short count)
 {
-	thisScript->CollectParameters(arg0, count);
+	script->CollectParameters(arg0, count);
 	int origModel = CTheScripts::ScriptParams[1].iParam;
 
-	if (thisScript->m_szName == (std::string)"bike1" && origModel == 166)
+	if (script->m_szName == std::string("bike1") && origModel == 166)
 	{
 		CTheScripts::ScriptParams[1].iParam = AlloyWheelsVehicles[RandomNumber(0, AlloyWheelsVehicles.size() - 1)];
 	}
@@ -105,12 +141,12 @@ void* __fastcall scm::CreateRandomizedCab(CVehicle* vehicle, void* edx, int mode
 
 	return vehicle;
 }
-void __fastcall scm::FixBombsAwayVan(CRunningScript* thisScript, void* edx, int* arg0, short count)
+void __fastcall scm::FixBombsAwayVan(CRunningScript* script, void* edx, int* arg0, short count)
 {
-	thisScript->CollectParameters(arg0, count);
+	script->CollectParameters(arg0, count);
 
 	/* As it resets the vehicle position, I have to change it here instead */
-	if (thisScript->m_szName == (std::string)"hait2")
+	if (script->m_szName == std::string("hait2"))
 	{
 		int x = CTheScripts::ScriptParams[1].fParam;
 		int y = CTheScripts::ScriptParams[2].fParam;
@@ -132,7 +168,7 @@ void scm::AlloyWheelsFix(int modelID, char* thread)
 {
 	/* Checking for "Alloy Wheels of Steel" - this will store the bikes
 	that the bikers are driving so they can go through checkpoints */
-	if (thread == (std::string)"bike1")
+	if (thread == std::string("bike1"))
 		AlloyWheelsVehicles.push_back(modelID);
 	else
 		if (AlloyWheelsVehicles.size() > 0)

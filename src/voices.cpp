@@ -182,7 +182,7 @@ char* __fastcall voices::FixDeathRowText(CText* text, void* edx, char* key)
 }
 void voices::LoadTable(CText* text, char* key)
 {
-	for (int i = sizeof(tables) / 4 - 1; i >= 0; i--)
+	for (int i = 0; i < sizeof(tables) / 4; i++)
 	{
 		text->LoadMissionText(tables[i]);
 		char* txt = text->GetText(key);
@@ -211,8 +211,8 @@ void voices::InitialiseSounds()
 			sounds.push_back(fileName);
 		}
 	}
-	std::vector<std::string> blacklisted_sounds = {"rok2_01", "AirHornL", "AirHornR", "CameraL",
-	"CameraR", "pager", "SnipSCRL", "SnipShort"};
+	std::vector<std::string> blacklisted_sounds = {"rok2_01", "AirHornL", "AirHornR", "BlowRoof",
+	"CameraL", "CameraR", "pager", "SnipSCRL", "SnipShort"};
 
 	for (int i = 0; i < blacklisted_sounds.size(); i++)
 		sounds.erase(std::remove(sounds.begin(), sounds.end(), blacklisted_sounds[i]), sounds.end());
