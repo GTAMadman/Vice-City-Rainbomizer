@@ -25,7 +25,7 @@ void __fastcall Autosave::RequestAutosave(CRunningScript* script, void* edx, int
 		FindPlayerPed()->m_bInVehicle = inVehicle;
 	}
 }
-void __fastcall Autosave::SetTotalNumberMissions(CRunningScript* thisScript, void* edx, int* arg0, short count)
+void __fastcall Autosave::IncreaseMissionsPassed(CRunningScript* thisScript, void* edx, int* arg0, short count)
 {
 	thisScript->CollectParameters(arg0, count);
 	ShouldSave = true;
@@ -47,6 +47,6 @@ void Autosave::Initialise()
 	if (Config::autosave.Enabled)
 	{
 		plugin::patch::RedirectCall(0x44FC32, RequestAutosave);
-		plugin::patch::RedirectCall(0x456992, SetTotalNumberMissions);
+		plugin::patch::RedirectCall(0x456992, IncreaseMissionsPassed);
 	}
 }

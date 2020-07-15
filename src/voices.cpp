@@ -1,7 +1,13 @@
 #include"voices.h"
 
-int voices::phoneCallSound = -1;
-std::vector<std::string> voices::sounds;
+struct MissionAudioData
+{
+	char* SoundName;
+	uint32_t SoundId;
+};
+
+CText* voices::previousText;
+std::string voices::previousTable;
 
 std::unordered_map<std::string, std::string> subtitles{ {
 	{"mob_52a", "mob52_a"}, {"mob_52b", "mob52_b"}, {"mob_52c", "mob52_c"},
@@ -120,37 +126,48 @@ const char* tables[] = { "AMBULAE", "ASSIN1", "ASSIN2", "ASSIN3", "ASSIN4", "ASS
 "RCRACE1", "ROCK1", "ROCK2", "ROCK3", "SERG1", "SERG2", "SERG3", "TAXI1", "TAXICUT", "TAXIWA1",
 "TAXIWA2", "TAXIWA3"};
 std::unordered_map<std::string, std::string> voices::voiceLines;
-std::string voices::previousTable;
+MissionAudioData* MissionAudioNameSfxAssoc = (MissionAudioData*)0x6B0250;
+
+const int STREAMED_SOUND_MISSION_START = 0x67;
+const int STREAMED_SOUND_MISSION_END = 0x4C7;
 
 void __fastcall voices::LoadRandomizedAudio(cDMAudio* audio, void* edx, int slot, char* text)
 {
-	int index = RandomNumber(0, sounds.size() - 1);
+	int index;
+	while ((index = RandomNumber(STREAMED_SOUND_MISSION_START, STREAMED_SOUND_MISSION_END), index == 671));
 
 	if (Config::voice.loopEnabled)
 	{
-		if (text == (std::string)"mobring")
-			phoneCallSound == -1 ? phoneCallSound = index : index = phoneCallSound;
+		static int phonecall = -1;
+		if (text == std::string("mobring"))
+			phonecall == -1 ? phonecall = index : index = phonecall;
 	}
 
-	std::string sound = sounds[index];
+	std::string newName = MissionAudioNameSfxAssoc[index - STREAMED_SOUND_MISSION_START].SoundName;
 
 	if (Config::voice.MatchSubtitles)
 	{
 		for (int i = 0; i < strlen(text); i++)
 			text[i] = std::tolower(text[i]);
 
-		std::transform(sound.begin(), sound.end(), sound.begin(),
+		std::transform(newName.begin(), newName.end(), newName.begin(),
 			[](unsigned char c) { return std::tolower(c); });
 
 		std::string subtitle = subtitles.count(text) ? subtitles[text] : text;
 		std::transform(subtitle.begin(), subtitle.end(), subtitle.begin(),
 			[](unsigned char c) { return std::tolower(c); });
 
-		voiceLines[subtitle] = sound;
-		if (subtitles.count(sound))
-			voiceLines[subtitle] = subtitles[sound];
+		/* Labels which return their own, causing mission text to appear */
+		if (index > 637 && index < 646 || index > 119 && index < 135 || index > 187 
+			&& index < 191 || index == 632 || index == 770)
+			voiceLines[subtitle] = "";
+		else
+		voiceLines[subtitle] = newName;
+
+		if (subtitles.count(newName))
+			voiceLines[subtitle] = subtitles[newName];
 	}
-	audio->PreloadMissionAudio(slot, sound.c_str());
+	audio->PreloadMissionAudio(slot, newName.c_str());
 }
 char* __fastcall voices::FixSubtitles(CText* text, void* edx, char* key)
 {
@@ -185,8 +202,7 @@ void voices::LoadTable(CText* text, char* key)
 	for (int i = 0; i < sizeof(tables) / 4; i++)
 	{
 		text->LoadMissionText(tables[i]);
-		char* txt = text->GetText(key);
-		if (std::strlen(txt) > 0)
+		if (std::strlen(text->GetText(key)) > 0)
 			return;
 	}
 	if (previousTable != "")
@@ -195,27 +211,17 @@ void voices::LoadTable(CText* text, char* key)
 void __fastcall voices::UseGXTTable(CText* text, void* edx, const char* table)
 {
 	text->LoadMissionText(table);
+	previousText = text;
 	previousTable = table;
 }
-void voices::InitialiseSounds()
+void __fastcall voices::HasAudioFinished(CRunningScript* script, void* edx, char flag)
 {
-	for (auto& files : std::filesystem::directory_iterator(plugin::paths::GetGameDirRelativePathA("Audio/")))
+	if (flag)
 	{
-		if (files.path().extension() == ".wav")
-		{
-			std::string sound = files.path().filename().string();
-
-			size_t index = sound.find_last_of(".");
-			std::string fileName = sound.substr(0, index);
-
-			sounds.push_back(fileName);
-		}
+		if (previousTable != "" && script->m_szName != std::string("cell"))
+			previousText->LoadMissionText(previousTable.c_str());
 	}
-	std::vector<std::string> blacklisted_sounds = {"rok2_01", "AirHornL", "AirHornR", "BlowRoof",
-	"CameraL", "CameraR", "pager", "SnipSCRL", "SnipShort"};
-
-	for (int i = 0; i < blacklisted_sounds.size(); i++)
-		sounds.erase(std::remove(sounds.begin(), sounds.end(), blacklisted_sounds[i]), sounds.end());
+	script->UpdateCompareFlag(flag);
 }
 void cDMAudio::PreloadMissionAudio(int slot, const char* text)
 {
@@ -240,8 +246,7 @@ void voices::Initialise()
 			plugin::patch::RedirectCall(0x44AFE7, FixSubtitles);
 			plugin::patch::RedirectCall(0x44AF4B, FixDeathRowText);
 			plugin::patch::RedirectCall(0x62F8A1, UseGXTTable);
+			plugin::patch::RedirectCall(0x45AC16, HasAudioFinished);
 		}
-		if (sounds.size() == 0)
-			InitialiseSounds();
 	}
 }

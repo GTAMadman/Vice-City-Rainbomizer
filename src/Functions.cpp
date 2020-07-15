@@ -13,9 +13,9 @@ void Functions::LoadModel(int modelID)
 		CStreaming::LoadAllRequestedModels(false);
 	}
 }
-int Functions::RandomNumber(unsigned int min, unsigned int max)
+int Functions::RandomNumber(int min, int max)
 {
-	std::uniform_int_distribution<int> random(min, max);
+	std::uniform_int_distribution random(min, max);
 	return random(rngEngine);
 }
 char* Functions::GetThreadName()
@@ -37,6 +37,14 @@ bool Functions::IsModelLoaded(int modelID)
 	if (CStreaming::ms_aInfoForModel[modelID].m_nLoadState == 1)
 		return true;
 	return false;
+}
+int Functions::GetNumberOfVehiclesLoaded()
+{
+	return *ms_numVehiclesLoaded;
+}
+int Functions::GetRandomLoadedVehicle()
+{
+	return CStreaming::ms_vehiclesLoaded[RandomNumber(0, GetNumberOfVehiclesLoaded() - 1)];
 }
 void __fastcall Functions::StartMission(CRunningScript* script, void* edx, int* arg0, short count)
 {

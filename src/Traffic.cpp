@@ -2,18 +2,21 @@
 
 int Traffic::ChooseModelToLoad()
 {
-	return RandomNumber(130, 236);
+	int model;
+	while ((model = RandomNumber(130, 236), IsModelLoaded(model)));
+
+	return model;
 }
 int Traffic::RandomizeTraffic()
 {
 	int model;
-	if (*ms_numVehiclesLoaded < 1) // Added as a safety precaution
+	if (GetNumberOfVehiclesLoaded() < 1) // Added as a safety precaution
 		return -1;
 
 	// Attempt to get a loaded vehicle 20 times - otherwise return nothing
 	for (int i = 0; i < 21; i++)
 	{
-		model = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)];
+		model = GetRandomLoadedVehicle();
 		if (ModelInfo::IsBlacklistedVehicle(model) || model < 130 || model > 236)
 			continue;
 
@@ -27,12 +30,12 @@ int Traffic::RandomizeTraffic()
 int Traffic::RandomizePoliceTraffic()
 {
 	int model;
-	if (*ms_numVehiclesLoaded < 1) // Added as a safety precaution
+	if (GetNumberOfVehiclesLoaded() < 1) // Added as a safety precaution
 		return 156;
 
 	for (int i = 0; i < 21; i++)
 	{
-		model = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)];
+		model = GetRandomLoadedVehicle();
 		if (ModelInfo::IsMiscVehicle(model) || ModelInfo::IsBlacklistedVehicle(model) || model < 130 || model > 236)
 			continue;
 
@@ -117,21 +120,25 @@ void* Traffic::RandomizeCarPeds(ePedType type, int model, CVector posn, int arg3
 }
 void* __fastcall Traffic::RandomizeRoadblocks(CVehicle* vehicle, void* edx, int model, char createdBy)
 {
-	int newModel;
-	for (int i = 0; i < 21; i++)
+	int newModel = model;
+
+	if (GetNumberOfVehiclesLoaded() > 0)
 	{
-		newModel = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)];
+		for (int i = 0; i < 21; i++)
+		{
+			newModel = GetRandomLoadedVehicle();
+			if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel) ||
+				newModel < 130 || newModel > 236)
+				continue;
+
+			break;
+		}
+
+		// Additional check just in case the loop ended with an invalid model
 		if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel) ||
 			newModel < 130 || newModel > 236)
-			continue;
-
-		break;
+			newModel = model;
 	}
-
-	// Additional check just in case the loop ended with an invalid model
-	if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel) ||
-		newModel < 130 || newModel > 236)
-		newModel = model;
 
 	if (ModelInfo::IsBoatModel(newModel))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(newModel, createdBy);

@@ -28,22 +28,28 @@ void __fastcall Parked::ParkedVehiclesRandomizer(CCarGenerator* gen)
 }
 void* __fastcall Parked::CarparkVehiclesRandomizer(CVehicle* vehicle, void* edx, int model, char createdBy)
 {
-	int newModel;
-	for (int i = 0; i < 21; i++)
-	{
-		newModel = CStreaming::ms_vehiclesLoaded[RandomNumber(0, *ms_numVehiclesLoaded - 1)];
-		if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel)
-			|| newModel < 130 || newModel > 236)
-			continue;
+	int newModel = model;
 
-		if (!IsModelLoaded(newModel))
+	if (GetNumberOfVehiclesLoaded() > 0)
+	{
+		for (int i = 0; i < 21; i++)
+		{
+			newModel = GetRandomLoadedVehicle();
+			if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel)
+				|| ModelInfo::IsBoatModel(newModel) || newModel < 130 || newModel > 236)
+				continue;
+
+			if (!IsModelLoaded(newModel))
+				newModel = model;
+
+			break;
+		}
+
+		// Additional check just in case the loop ended with an invalid model
+		if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel)
+			|| ModelInfo::IsBoatModel(newModel) || newModel < 130 || newModel > 236 || !IsModelLoaded(newModel))
 			newModel = model;
 	}
-
-	// Additional check just in case the loop ended with an invalid model
-	if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel)
-		|| newModel < 130 || newModel > 236 || !IsModelLoaded(newModel))
-		newModel = model;
 
 	if (ModelInfo::IsBoatModel(newModel))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(newModel, createdBy);

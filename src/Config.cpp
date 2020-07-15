@@ -19,15 +19,27 @@ void ReadConfigBool(const std::string& key, const std::string& data, bool& value
 	if (data.find(key) != std::string::npos)
 		value = data.find("true") != std::string::npos;
 }
-
-template<typename F>
-void ReadConfigCustom(const std::string& key, const std::string& data, F& pred)
+void ReadConfigInt(const std::string& key, const std::string& data, int& value)
 {
 	if (data.find(key) != std::string::npos)
-		pred();
-}
+	{
+		std::stringstream stream;
+		stream << data;
 
-/* Probably not the best way to read from and write to the config, but it works for now */
+		std::string str;
+		int val;
+
+		while (!stream.eof())
+		{
+			stream >> str;
+			if (std::stringstream(str) >> val)
+			{
+				value = val;
+				break;
+			}
+		}
+	}
+}
 void Config::ScriptedVehiclesRandomizer::Read(const std::string& line)
 {
 	ReadConfigBool("ScriptVehiclesRandomizer", line, Enabled);
@@ -35,6 +47,7 @@ void Config::ScriptedVehiclesRandomizer::Read(const std::string& line)
 	ReadConfigBool("OffroadMissions", line, offroadEnabled);
 	ReadConfigBool("RCMissions", line, rcEnabled);
 	ReadConfigBool("ChopperCheckpoints", line, chopperCheckpointEnabled);
+	ReadConfigBool("PizzaBoy", line, pizzaBoyEnabled);
 }
 void Config::RCVehiclesRandomizer::Read(const std::string& line)
 {
@@ -72,6 +85,7 @@ void Config::WeaponRandomizer::Read(const std::string& line)
 	ReadConfigBool("WeaponRandomizer", line, Enabled);
 	ReadConfigBool("ReduceMeleeWeapons", line, ReduceMeleeWeaponsEnabled);
 	ReadConfigBool("AllowRocketMissile", line, RocketEnabled);
+	ReadConfigBool("AllowTearGas", line, tearGasEnabled);
 }
 void Config::PickupsRandomizer::Read(const std::string& line)
 {
@@ -100,16 +114,10 @@ void Config::VoiceLineRandomizer::Read(const std::string& line)
 void Config::Autosave::Read(const std::string& line)
 {
 	ReadConfigBool("Autosave", line, Enabled);
-	ReadConfigCustom("Slot", line, [line, this] {
-		for (int x = 1; x < 9; x++)
-		{
-			if (line.find(std::to_string(x)) != std::string::npos)
-			{
-				this->slot = x;
-				break;
-			}
-		}
-		});
+	ReadConfigInt("Slot", line, slot);
+
+	if (slot < 1 || slot > 8)
+		slot = 8;
 }
 void Config::WriteConfig()
 {

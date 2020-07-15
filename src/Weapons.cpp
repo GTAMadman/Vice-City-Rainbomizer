@@ -20,16 +20,12 @@ int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, eWeaponType w
 	}
 
 	int newWeapon = GetRandomWeapon();
-	
+
 	int weaponModel = CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModelId;
-	int weaponModel2 = CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModel2Id;
 
 	// Load the weapon model before setting it
 	if (!IsModelLoaded(weaponModel))
 		LoadModel(weaponModel);
-
-	if (!IsModelLoaded(weaponModel2))
-		LoadModel(weaponModel2);
 
 	int origSlot = CWeaponInfo::GetWeaponInfo((eWeaponType)weapon)->m_WeaponSlot;
 	int newSlot = CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_WeaponSlot;
@@ -50,7 +46,7 @@ void __fastcall Weapons::SetCurrentWeapon(CPed* ped, void* edx, eWeaponType weap
 	if (ped->m_nModelIndex > -2 && ped->m_nModelIndex < 5)
 	{
 		// The Shootist + Shooting Range Fix
-		if (GetThreadName() == (std::string)"bank2" || GetThreadName() == (std::string)"shoot")
+		if (GetThreadName() == std::string("bank2") || GetThreadName() == std::string("shoot"))
 		{
 			if (ped->IsPlayer() && weapon == 3)
 			{
@@ -83,6 +79,11 @@ bool Weapons::IsBlacklistedWeapon(int weaponID)
 	case 16:
 		if (Config::weapons.RocketEnabled)
 			return false;
+		return true;
+	case 14:
+		if (Config::weapons.tearGasEnabled)
+			return false;
+		return true;
 	case 13:
 	case 35:
 		return true;

@@ -18,6 +18,10 @@ void Remote::GivePlayerRCVehicleHooked(float x, float y, float z, float angle, s
 	newZ += scm::CheckPatternForMovePosition(modelId, x, y, z).z;
 
 	LoadModel(newModel);
+
+	if (!IsModelLoaded(newModel))
+		newModel = modelId;
+
 	GivePlayerRCVehicle(newX, newY, newZ, angle, newModel);
 }
 void Remote::GivePlayerRCVehicle(float x, float y, float z, float angle, short modelId)

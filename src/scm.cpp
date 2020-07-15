@@ -109,6 +109,12 @@ void scm::FixForcedPlayerVehicleType(CRunningScript* script, void* edx, int* arg
 					CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
 		}
 	}
+	if (Config::script.pizzaBoyEnabled)
+	{
+		if (origModel == 178)
+			if (FindPlayerVehicle())
+				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+	}
 }
 void scm::FixForcedPedVehicleType(CRunningScript* script, void* edx, int* arg0, short count)
 {
@@ -126,9 +132,12 @@ void* __fastcall scm::CreateRandomizedCab(CVehicle* vehicle, void* edx, int mode
 
 	while ((newModel = RandomNumber(130, 236)), ModelInfo::IsMiscVehicle(newModel) || 
 		ModelInfo::IsBlacklistedVehicle(newModel) || ModelInfo::IsRCModel(newModel) || CModelInfo::IsBoatModel(newModel) || 
-		newModel == 155 || newModel == 178 || newModel == 215); // Hunter, Pizza Boy, Baggage
+		newModel == 155 || newModel == 178 || newModel == 215 || newModel < 130 || newModel > 236); // Hunter, Pizza Boy, Baggage
 
 	LoadModel(newModel);
+
+	if (!IsModelLoaded(newModel))
+		newModel = modelId;
 
 	if (CModelInfo::IsHeliModel(newModel))
 		reinterpret_cast<CHeli*>(vehicle)->CHeli::CHeli(newModel, createdBy);
@@ -205,7 +214,7 @@ void scm::InitialisePatterns()
 	Patterns.push_back(pattern); // Crashes as a Coach for some reason
 
 	// RC Bandit
-	pattern = { .vehicle = {171}, .allowed = {171}, .allowedType = {"car"} };
+	pattern = { .vehicle = {171}, .allowedType = {"car", "rc"} };
 	Patterns.push_back(pattern);
 
 	// RC Baron
@@ -225,7 +234,7 @@ void scm::InitialisePatterns()
 	Patterns.push_back(pattern);
 
 	// Taxi - The Job
-	pattern = { .vehicle = {150}, .allowed = {167, 161}, .coords = {496, -84, 9}, .doors = {4} };
+	pattern = { .vehicle = {150}, .allowed = {167}, .denied = {217, 227}, .coords = {496, -84, 9}, .doors = {4} };
 	Patterns.push_back(pattern);
 
 	// Speeder - Stunt Boat Challenge
@@ -241,7 +250,11 @@ void scm::InitialisePatterns()
 	Patterns.push_back(pattern); // Using thread only will return the original vehicle
 
 	// Publicity Tour
-	pattern = { .vehicle = {201}, .allowed = {167, 161}, .denied = {217, 227}, .coords = {-872, 1151, 11}, .doors = {4} };
+	pattern = { .vehicle = {201}, .allowed = {167}, .denied = {217, 227}, .coords = {-872, 1151, 11}, .doors = {4} };
+	Patterns.push_back(pattern);
+
+	// The Chase - BF Injection
+	pattern = { .vehicle = {154}, .denied = {178, 215}, .allowedType = {"car", "bike"}, .thread = {"baron1"} };
 	Patterns.push_back(pattern);
 
 	// Phnom Penh '86 - Maverick

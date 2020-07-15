@@ -10,7 +10,7 @@ class Autosave : Functions
 public:
 	static void Initialise();
 private:
-	static void __fastcall SetTotalNumberMissions(CRunningScript* thisScript, void* edx, int* arg0, short count);
+	static void __fastcall IncreaseMissionsPassed(CRunningScript* thisScript, void* edx, int* arg0, short count);
 	static void __fastcall RequestAutosave(CRunningScript* script, void* edx, int opcode);
 	static bool ShouldSave;
 	static char* MakeValidSaveName(int slot);

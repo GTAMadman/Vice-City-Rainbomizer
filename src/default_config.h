@@ -11,6 +11,7 @@ ScriptVehiclesRandomizer = true
 OffroadMissions = true # (Trial by Dirt (bikes only), Test Track (cars only), PCJ Playground, Cone Crazy)
 RCMissions = true # (RC Raider Pickup, RC Bandit Race, RC Baron Race)
 ChopperCheckpoints = true # (Will only be activated by helicopters)
+PizzaBoy = true # (Activate and use any vehicle for pizza boy)
 
 ###########################################
 # RC Vehicles Randomizer
@@ -67,16 +68,19 @@ ReduceMeleeWeapons = false
 
 AllowRocketMissile = false
 
+# Tear gas can sometimes cause lag when used by peds
+AllowTearGas = true
+
 ###########################################
 # Pickups Randomizer
 
-# Experimental - randomizes weapons, health, armour, adrenaline, bribe stars and mission pickups
-# This feature may cause some missions to be impossible to complete
+# Randomizes weapons, health, armour, adrenaline, bribe stars and mission pickups
+# This feature is safe to use, though pickups are saved to the save file
  
-PickupsRandomizer = false
+PickupsRandomizer = true
 
 # Randomizes the weapons dropped by dead peds
-RandomizePedWeaponDrops = false
+RandomizePedWeaponDrops = true
 
 # Allowed pickup types
 Weapons = true

@@ -2,8 +2,7 @@
 #include "default_config.h"
 #include <fstream>
 #include <filesystem>
-#include <vector>
-#include <string>
+#include <sstream>
 
 class Config
 {
@@ -16,6 +15,7 @@ public:
 		bool offroadEnabled;
 		bool rcEnabled;
 		bool chopperCheckpointEnabled;
+		bool pizzaBoyEnabled;
 		void Read(const std::string& line);
 	} script;
 
@@ -46,6 +46,7 @@ public:
 	{
 		bool Enabled;
 		bool RocketEnabled;
+		bool tearGasEnabled;
 		bool ReduceMeleeWeaponsEnabled;
 		void Read(const std::string& line);
 	} weapons;
