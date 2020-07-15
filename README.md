@@ -8,9 +8,11 @@ Logo created by Catmare
 - **Script Vehicle Randomizer**: Randomizes the vehicles you are given in missions. The randomizer makes sure that you get vehicles that are usable for the mission.
 - **RC Vehicles Randomizer**: Randomizes the vehicles you are given in the RC missions.
 - **Parked Vehicles Randomizer**: Randomizes cars which are found parked around the map.
-- **Colour Randomizer**: Randomizes the colours of various in-game elements, including cars, the HUD, and markers.
+- **Colour Randomizer**: Randomizes the colours of various in-game elements, including cars, the HUD, markers, pickups, explosions and more!
 - **Traffic Randomizer**: Randomizes vehicles that spawn in traffic, including law enforcement vehicles.
 - **Weapon Randomizer**: Randomizes the weapons that are given to other peds throughout the game.
+- **Pickups Randomizer**: Randomizes pickups throughout the world, including pickups given to you by missions and dropped by peds.
+- **Clothes Randomizer**: Randomizes the player clothing when the game changes the player outfits.
 - **Voice Line Randomizer**: Randomizes the voice lines played in missions and phonecalls.
 - **Autosave**: Automatically creates a savegame in slot 8 upon completing a mission. The autosave slot can be changed in the config file.
 
@@ -39,7 +41,8 @@ More information about how to configure specific randomizers is provided in the 
 ## Installation
 
 1) Downgrade to 1.0 (download link available above)
-2) Put the ASI and CFG files into your GTA Vice City directory.
+2) Download the latest version from the releases page: https://github.com/GTAMadman/Vice-City-Rainbomizer/releases
+3) Put the ASI and CFG files into your GTA Vice City directory.
 
 ## Credits
 
@@ -61,6 +64,7 @@ More information about how to configure specific randomizers is provided in the 
 - [SpeedyFolf](https://www.twitch.tv/speedyfolf) - Testing and streaming the mod
 - [123robot](https://www.twitch.tv/123robot) - Testing and streaming the mod
 - [Ads_Sal](https://www.twitch.tv/ads_sal) - Testing the mod
+- [Vod_Crack](https://www.twitch.tv/vod_crack) - Streaming and testing of the mod
 
 ## Used Libraries
 
