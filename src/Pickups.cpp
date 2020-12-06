@@ -2,21 +2,30 @@
 
 std::vector<int> Pickups::allowed_pickups;
 std::vector<int> Pickups::original_pickups = {259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270,
-271, 272, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 292, 366,
-367, 368, 375, 258, 335, 508};
+271, 272, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 292, 365, 
+366, 367, 368, 375, 258, 335, 508};
 int Pickups::RandomizePickups(CVector posn, int modelID, char arg3, int arg4, int arg5, bool arg6, char* msg)
 {
 	int newPickup = modelID;
 	
 	for (int i = 0; i < original_pickups.size(); i++)
 	{
-		if (modelID == original_pickups[i])
+		if (modelID == original_pickups[i] || modelID == 291)
 		{
 			newPickup = allowed_pickups[RandomNumber(0, allowed_pickups.size() - 1)];
 			break;
 		}
 	}
 	return CPickups::GenerateNewOne(posn, newPickup, arg3, arg4, arg5, arg6, msg);
+}
+bool Pickups::GiveMoneyForBriefcase(unsigned short model, int plrIndex)
+{
+	if (model == 335)
+	{
+		if (FindPlayerPed())
+			FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_nMoney += RandomNumber(1, 500);
+	}
+	return CPickups::GivePlayerGoodiesWithPickUpMI(model, plrIndex);
 }
 void Pickups::Initialise()
 {
@@ -49,5 +58,11 @@ void Pickups::Initialise()
 
 		if (Config::pickups.randomizePedDrops)
 			plugin::patch::RedirectCall(0x43E143, RandomizePickups);
+
+		if (Config::pickups.briefcaseMoney)
+		{
+			for (int addr : {0x440D6D, 0x440E7A, 0x441070})
+				plugin::patch::RedirectCall(addr, GiveMoneyForBriefcase);
+		}
 	}
 }

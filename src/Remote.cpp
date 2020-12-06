@@ -1,6 +1,6 @@
 #include "Remote.h"
 
-void Remote::GivePlayerRCVehicleHooked(float x, float y, float z, float angle, short modelId)
+void Remote::GivePlayerRandomRCVehicle(float x, float y, float z, float angle, short modelId)
 {
 	int newModel = 0;
 
@@ -10,12 +10,12 @@ void Remote::GivePlayerRCVehicleHooked(float x, float y, float z, float angle, s
 	int newZ = z;
 
 	// Check for vehicle pattern
-	newModel = scm::GetIDBasedOnPattern(modelId, x, y, z, "null");
+	newModel = Script::GetIDBasedOnPattern(modelId, x, y, z, "null");
 
 	// Change the coordinates
-	newX += scm::CheckPatternForMovePosition(modelId, x, y, z).x;
-	newY += scm::CheckPatternForMovePosition(modelId, x, y, z).y;
-	newZ += scm::CheckPatternForMovePosition(modelId, x, y, z).z;
+	newX += Script::CheckPatternForMovePosition(modelId, x, y, z).x;
+	newY += Script::CheckPatternForMovePosition(modelId, x, y, z).y;
+	newZ += Script::CheckPatternForMovePosition(modelId, x, y, z).z;
 
 	LoadModel(newModel);
 
@@ -26,16 +26,16 @@ void Remote::GivePlayerRCVehicleHooked(float x, float y, float z, float angle, s
 }
 void Remote::GivePlayerRCVehicle(float x, float y, float z, float angle, short modelId)
 {
-	plugin::CallDynGlobal<float, float, float, float, unsigned short>(0x442020, x, y, z, angle, modelId);
+	plugin::CallDynGlobal<float, float, float, float, short>(0x442020, x, y, z, angle, modelId);
 }
 void Remote::Initialise()
 {
 	if (Config::rc.Enabled)
 	{
-		plugin::patch::RedirectCall(0x6075BD, GivePlayerRCVehicleHooked); // RC Raider + RC Baron
-		plugin::patch::RedirectCall(0x4458FD, GivePlayerRCVehicleHooked); // RC Bandit
+		plugin::patch::RedirectCall(0x6075BD, GivePlayerRandomRCVehicle); // RC Raider + RC Baron
+		plugin::patch::RedirectCall(0x4458FD, GivePlayerRandomRCVehicle); // RC Bandit
 
-		if (scm::Patterns.size() == 0)
-		scm::InitialisePatterns();
+		if (Script::Patterns.size() == 0)
+			Script::InitialisePatterns();
 	}
 }

@@ -1,29 +1,33 @@
 #include "plugin.h"
 #include "Config.h"
-#include "scm.h"
+#include "Script.h"
 #include "Remote.h"
 #include "Parked.h"
 #include "Traffic.h"
 #include "Weapons.h"
 #include "Colours.h"
-#include "voices.h"
+#include "Voices.h"
 #include "Pickups.h"
 #include "Clothes.h"
+#include "Cutscenes.h"
+#include "Credits.h"
 #include "Autosave.h"
 
 class Rainbomizer {
 public:
 	Rainbomizer() {
 		Config::Initialise();
-		scm::Initialise();
+		Script::Initialise();
 		Remote::Initialise();
 		Parked::Initialise();
 		Traffic::Initialise();
 		Weapons::Initialise();
 		Colours::Initialise();
-		voices::Initialise();
+		Voices::Initialise();
 		Pickups::Initialise();
 		Clothes::Initialise();
+		Cutscenes::Initialise();
+		Credits::Initialise();
 		Autosave::Initialise();
 	}
 } rainbomizer;

@@ -3,7 +3,6 @@
 #include "Config.h"
 #include "Functions.h"
 #include "CWeaponInfo.h"
-#include "CRunningScript.h"
 #include "CProjectileInfo.h"
 
 class Weapons : Functions

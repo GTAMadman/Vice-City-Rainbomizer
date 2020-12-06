@@ -25,10 +25,12 @@ void __fastcall Autosave::RequestAutosave(CRunningScript* script, void* edx, int
 		FindPlayerPed()->m_bInVehicle = inVehicle;
 	}
 }
-void __fastcall Autosave::IncreaseMissionsPassed(CRunningScript* thisScript, void* edx, int* arg0, short count)
+void __fastcall Autosave::IncreaseMissionsPassed(CRunningScript* script, void* edx, int* arg0, short count)
 {
-	thisScript->CollectParameters(arg0, count);
-	ShouldSave = true;
+	script->CollectParameters(arg0, count);
+
+	if (script->m_szName != std::string("usj"))
+		ShouldSave = true;
 }
 char* Autosave::MakeValidSaveName(int slot)
 {
@@ -49,4 +51,8 @@ void Autosave::Initialise()
 		plugin::patch::RedirectCall(0x44FC32, RequestAutosave);
 		plugin::patch::RedirectCall(0x456992, IncreaseMissionsPassed);
 	}
+
+	// Put this here for now
+	if (Config::general.replays)
+		plugin::patch::Nop(0x4A45C3, 5);
 }

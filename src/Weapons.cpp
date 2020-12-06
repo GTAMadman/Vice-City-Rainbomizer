@@ -11,6 +11,7 @@ std::vector<int> Weapons::WeaponGroups[8] =
 	{28, 29}, // Sniper rifles
 	{30, 31, 32, 33, 35} // Heavy weapons
 };
+
 int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, eWeaponType weapon, int ammo, bool likeUnused)
 {
 	if (ped->IsPlayer() || ped->m_nModelIndex == -1)
@@ -46,7 +47,7 @@ void __fastcall Weapons::SetCurrentWeapon(CPed* ped, void* edx, eWeaponType weap
 	if (ped->m_nModelIndex > -2 && ped->m_nModelIndex < 5)
 	{
 		// The Shootist + Shooting Range Fix
-		if (GetThreadName() == std::string("bank2") || GetThreadName() == std::string("shoot"))
+		if (GetThreadName() == std::string("bankjo2") || GetThreadName() == std::string("range"))
 		{
 			if (ped->IsPlayer() && weapon == 3)
 			{
@@ -119,9 +120,5 @@ void Weapons::Initialise()
 			plugin::patch::RedirectCall(addr, SetCurrentWeapon);
 
 		plugin::patch::RedirectCall(0x5D4DBA, FixPedsWithRPG);
-
-		/* Used for getting current thread.
-		Currently only used for weapon randomizer */
-		plugin::patch::RedirectCall(0x608C27, Functions::StartMission);
 	}
 }

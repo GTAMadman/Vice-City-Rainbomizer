@@ -2,16 +2,18 @@
 
 std::vector<std::string> Clothes::outfits = {"PLAYER", "PLAYER2", "PLAYER3", "PLAYER4", "PLAYER5",
 "PLAYER6", "PLAYER7", "PLAYER8", "PLAYER9","PLAY11", "PLAY12", "PLAY10"};
+
 void __fastcall Clothes::RandomizeClothes(CPed* ped, void* edx, const char* modelName)
 {
 	std::string newModel;
 
 	// Two Bit Hit Fix
-	if (GetThreadName() == std::string("ser3") && modelName == std::string("player5"))
+	if (GetThreadName() == std::string("serg2") && modelName == std::string("player5"))
 	{
 		ped->Undress(modelName);
 		return;
 	}
+
 	newModel = outfits[RandomNumber(0, outfits.size() - 1)];
 	ped->Undress(newModel.c_str());
 }

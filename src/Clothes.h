@@ -2,8 +2,6 @@
 #include "plugin.h"
 #include "Config.h"
 #include "Functions.h"
-#include "CRunningScript.h"
-#include "CTheScripts.h"
 
 class Clothes : Functions
 {

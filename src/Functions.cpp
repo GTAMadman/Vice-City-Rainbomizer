@@ -1,9 +1,9 @@
 #include "Functions.h"
 
 int* Functions::ms_numVehiclesLoaded = reinterpret_cast<int*>(0xA10858);
+CRunningScript*& pActiveScripts = *(CRunningScript * *)0x975338;
 /* Initialised the random engine and given it a seed */
 std::mt19937 Functions::rngEngine{ (unsigned int)time(0) };
-char* Functions::currentThread = "noname";
 
 void Functions::LoadModel(int modelID)
 {
@@ -20,11 +20,11 @@ int Functions::RandomNumber(int min, int max)
 }
 char* Functions::GetThreadName()
 {
-	return currentThread;
+	return pActiveScripts->m_szName;
 }
-void Functions::SetThreadName(char* thread)
+std::string Functions::GetRainbomizerDir()
 {
-	currentThread = thread;
+	return std::string(plugin::paths::GetGameDirPathA()) + "rainbomizer/";
 }
 bool Functions::DoCoordinatesMatch(int x1, int y1, int z1, int x2, int y2, int z2)
 {
@@ -45,9 +45,4 @@ int Functions::GetNumberOfVehiclesLoaded()
 int Functions::GetRandomLoadedVehicle()
 {
 	return CStreaming::ms_vehiclesLoaded[RandomNumber(0, GetNumberOfVehiclesLoaded() - 1)];
-}
-void __fastcall Functions::StartMission(CRunningScript* script, void* edx, int* arg0, short count)
-{
-	script->CollectParameters(arg0, count);
-	SetThreadName(script->m_szName);
 }

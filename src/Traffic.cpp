@@ -3,13 +3,35 @@
 int Traffic::ChooseModelToLoad()
 {
 	int model;
-	while ((model = RandomNumber(130, 236), IsModelLoaded(model)));
 
-	return model;
+	// Forced vehicles
+	if (Config::traffic.forceVehicle)
+		return Config::traffic.forcedVehicleID;
+
+	for (int i = 0; i < 21; i++)
+	{
+		model = RandomNumber(130, 236);
+		if (!IsVehicleAllowed(model) && !IsModelLoaded(model))
+			continue;
+
+		return model;
+	}
+	return -1;
 }
 int Traffic::RandomizeTraffic()
 {
 	int model;
+
+	// Forced vehicles
+	if (Config::traffic.forceVehicle)
+	{
+		model = Config::traffic.forcedVehicleID;
+		if (!IsModelLoaded(model))
+			LoadModel(model);
+
+		return model;
+	}
+
 	if (GetNumberOfVehiclesLoaded() < 1) // Added as a safety precaution
 		return -1;
 
@@ -17,11 +39,8 @@ int Traffic::RandomizeTraffic()
 	for (int i = 0; i < 21; i++)
 	{
 		model = GetRandomLoadedVehicle();
-		if (ModelInfo::IsBlacklistedVehicle(model) || model < 130 || model > 236)
+		if (!IsVehicleAllowed(model) || ModelInfo::IsBlacklistedVehicle(model) || model < 130 || model > 236)
 			continue;
-
-		if (!IsModelLoaded(model))
-			return -1;
 
 		return model;
 	}
@@ -36,11 +55,8 @@ int Traffic::RandomizePoliceTraffic()
 	for (int i = 0; i < 21; i++)
 	{
 		model = GetRandomLoadedVehicle();
-		if (ModelInfo::IsMiscVehicle(model) || ModelInfo::IsBlacklistedVehicle(model) || model < 130 || model > 236)
+		if (!IsVehicleAllowed(model) || ModelInfo::IsBlacklistedVehicle(model) || model < 130 || model > 236)
 			continue;
-
-		if (!IsModelLoaded(model))
-			return 156;
 
 		return model;
 	}
@@ -185,6 +201,13 @@ void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int m
 	if (CModelInfo::IsCarModel(model))
 		reinterpret_cast<CAutomobile*>(vehicle)->CAutomobile::CAutomobile(model, createdBy);
 
+
+	if (vehicle->m_nModelIndex == 156)
+	{
+		vehicle->ChangeLawEnforcerState(1);
+		vehicle->m_nLockStatus = 5;
+	}
+
 	return vehicle;
 }
 void Traffic::AddPoliceCarOccupants(CVehicle* vehicle)
@@ -233,6 +256,34 @@ void Traffic::FixBoatSpawns(CPhysical* entity)
 		entity->m_nState = eEntityStatus::STATUS_PHYSICS;
 	}
 	CWorld::Add(entity);
+}
+bool Traffic::IsVehicleAllowed(int model)
+{
+	if (model < 130 || model > 236)
+		return false;
+
+	if (model == 180 && Config::traffic.airTrain)
+		return true;
+
+	if (model == 181 && Config::traffic.deadDodo)
+		return true;
+
+	if (ModelInfo::IsCarModel(model) && Config::traffic.cars)
+		return true;
+
+	if (CModelInfo::IsBikeModel(model) && Config::traffic.bikes)
+		return true;
+
+	if (ModelInfo::IsRCModel(model) && Config::traffic.RC)
+		return true;
+
+	if (ModelInfo::IsBoatModel(model) && Config::traffic.boats)
+		return true;
+
+	if (ModelInfo::IsHeliModel(model) && Config::traffic.helis)
+		return true;
+
+	return false;
 }
 void __fastcall Traffic::FixRoadblockCrash(CMatrix* matrix)
 {

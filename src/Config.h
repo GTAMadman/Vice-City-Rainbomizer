@@ -1,15 +1,24 @@
 #pragma once
 #include "default_config.h"
+#include "Functions.h"
 #include <fstream>
 #include <filesystem>
 #include <sstream>
 
 class Config
 {
+	static const std::string ConfigName;
 public:
 	static void Initialise();
 
-	static struct ScriptedVehiclesRandomizer
+	inline static struct General
+	{
+		bool replays;
+		bool credits;
+		void Read(const std::string& line);
+	} general;
+
+	inline static struct ScriptedVehiclesRandomizer
 	{
 		bool Enabled;
 		bool offroadEnabled;
@@ -19,30 +28,38 @@ public:
 		void Read(const std::string& line);
 	} script;
 
-	static struct RCVehiclesRandomizer
+	inline static struct RCVehiclesRandomizer
 	{
 		bool Enabled;
 		bool DriveRCVehiclesEnabled;
 		void Read(const std::string& line);
 	} rc;
 
-	static struct ParkedVehiclesRandomizer
+	inline static struct ParkedVehiclesRandomizer
 	{
 		bool Enabled;
 		void Read(const std::string& line);
 	} parked;
 
-	static struct TrafficRandomizer
+	inline static struct TrafficRandomizer
 	{
 		bool Enabled;
 		bool scriptedCopCarsEnabled;
 		bool roadblocksEnabled;
 		bool deadDodo;
 		bool airTrain;
+
+		bool cars;
+		bool bikes;
+		bool RC;
+		bool boats;
+		bool helis;
+		bool forceVehicle;
+		int forcedVehicleID = 0;
 		void Read(const std::string& line);
 	} traffic;
 
-	static struct WeaponRandomizer
+	inline static struct WeaponRandomizer
 	{
 		bool Enabled;
 		bool RocketEnabled;
@@ -51,7 +68,7 @@ public:
 		void Read(const std::string& line);
 	} weapons;
 
-	static struct ColourRandomizer
+	inline static struct ColourRandomizer
 	{
 		bool vehicleEnabled;
 		bool textEnabled;
@@ -64,7 +81,7 @@ public:
 		void Read(const std::string& line);
 	} colours;
 
-	static struct PickupsRandomizer
+	inline static struct PickupsRandomizer
 	{
 		bool Enabled;
 		bool randomizePedDrops;
@@ -76,16 +93,17 @@ public:
 		bool cellphone;
 		bool briefcase;
 		bool keycard;
+		bool briefcaseMoney;
 		void Read(const std::string& line);
 	} pickups;
 
-	static struct ClothesRandomizer
+	inline static struct ClothesRandomizer
 	{
 		bool Enabled;
 		void Read(const std::string& line);
 	} clothes;
 
-	static struct VoiceLineRandomizer
+	inline static struct VoiceLineRandomizer
 	{
 		bool Enabled;
 		bool MatchSubtitles;
@@ -93,12 +111,18 @@ public:
 		void Read(const std::string& line);
 	} voice;
 
-	static struct Autosave
+	inline static struct Autosave
 	{
 		int slot = 8;
 		bool Enabled;
 		void Read(const std::string& line);
 	} autosave;
+
+	inline static struct CutsceneRandomizer
+	{
+		bool Enabled;
+		void Read(const std::string& line);
+	} cutscene;
 
 	static void WriteConfig();
 };

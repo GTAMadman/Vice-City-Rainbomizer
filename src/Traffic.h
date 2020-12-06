@@ -34,6 +34,7 @@ private:
 	static void __fastcall SetExitCar(CPed* ped, void* edx, CVehicle* vehicle, int value);
 	static int __fastcall FixPedKilledInRCVehicle(CPed* ped, void* edx);
 	static bool FixDeadPedsInFrontOfRCVehicles(int modelID);
+	static bool IsVehicleAllowed(int model);
 
 	static void __fastcall FixRoadblockCrash(CMatrix* matrix);
 };

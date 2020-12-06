@@ -3,6 +3,12 @@ const char default_config[]
 = R"(# GTA Vice City Rainbomizer Configuration #
 
 ###########################################
+# General Configuration
+
+DisableReplays = false
+ModifyCredits = true
+
+###########################################
 # Script Vehicles Randomizer
 ScriptVehiclesRandomizer = true
 
@@ -51,9 +57,19 @@ RandomizeScriptedCopCars = true
 
 RandomizeRoadblocks = true
 
+# Vehicle types allowed to spawn in traffic
+EnableCars = true
+EnableBikes = true
+EnableRC = true
+EnableBoats = true
+EnableHelis = true
+
 # Additional vehicles
-DeadDodo = true
-AirTrain = true
+EnableDeadDodo = true
+EnableAirTrain = true
+
+# Force a vehicle with its ID, set to an invalid value to disable
+ForcedVehicleID = 0
 
 ###########################################
 # Weapon Randomizer
@@ -83,18 +99,25 @@ PickupsRandomizer = true
 RandomizePedWeaponDrops = true
 
 # Allowed pickup types
-Weapons = true
-Health = true
-Armour = true
-Adrenaline = true
-Bribes = true
-Cellphone = true
-Briefcase = true
-Keycard = true
+EnableWeapons = true
+EnableHealth = true
+EnableArmour = true
+EnableAdrenaline = true
+EnableBribes = true
+EnableCellphone = true
+EnableBriefcase = true
+EnableKeycard = true
+
+# Randomize a small amount of money given by a briefcase pickup
+MoneyInBriefcase = true
 
 ###########################################
 # Clothes Randomizer
 ClothesRandomizer = true
+
+###########################################
+# Cutscene Randomizer
+CutsceneRandomizer = true
 
 ###########################################
 # Voice Line Randomizer
