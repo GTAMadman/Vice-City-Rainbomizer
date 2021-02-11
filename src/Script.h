@@ -17,8 +17,10 @@ private:
 	static void* __fastcall CreateRandomizedCab(CVehicle* vehicle, void* edx, int modelId, bool createdBy);
 	static void __fastcall FixForcedPlayerVehicleType(CRunningScript* script, void* edx, int* arg0, short count);
 	static void __fastcall FixForcedPedVehicleType(CRunningScript* script, void* edx, int* arg0, short count);
+	static void __fastcall FixTrojanVoodooForcedVehicle(CRunningScript* script, void* edx, int* arg0, short count);
 	static void* __fastcall OpenBootFix(CAutomobile* vehicle, void* edx);
 	static void __fastcall FixBombsAwayVan(CRunningScript* script, void* edx, int* arg0, short count);
+	static void __fastcall FixFrozenLoadingScreens(CRunningScript* script, void* edx, char flag);
 	static void AlloyWheelsFix(int modelID, char* thread);
 	struct Pattern
 	{

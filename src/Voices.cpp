@@ -1,14 +1,11 @@
-#include"voices.h"
+#include"Voices.h"
+#include <map>
 
 struct MissionAudioData
 {
 	char* SoundName;
 	uint32_t SoundId;
 };
-
-CText* Voices::previousText;
-std::string Voices::previousTable;
-
 std::unordered_map<std::string, std::string> subtitles{ {
 	{"mob_52a", "mob52_a"}, {"mob_52b", "mob52_b"}, {"mob_52c", "mob52_c"},
 	{"mob_52d", "mob52_d"}, {"mob_52e", "mob52_e"}, {"mob_52f", "mob52_f"},
@@ -115,7 +112,7 @@ std::unordered_map<std::string, std::string> subtitles{ {
 	{"porn3_3", "por3_06"}, {"porn3_4", "por3_07"}, {"rok2_01", "rock_4"},
 	{"tex1_1", "tex1_3"},   {"tex1_3", "tex1_7"},   {"tex1_4", "tex1_6"},
 	{"tex1_5", "tex1_9"},   {"tex1_6", "tex1_10"},
-}};
+} };
 const char* tables[] = { "AMBULAE", "ASSIN1", "ASSIN2", "ASSIN3", "ASSIN4", "ASSIN5",
 "BANKJ1", "BANKJ2", "BANKJ3", "BANKJ4", "BARON1", "BARON2", "BARON3", "BARON4", "BARON5",
 "BIKE1", "BIKE2", "BIKE3", "BMX_1", "BOATBUY", "CAP_1", "CARBUY", "COPCAR", "COUNT1", "COUNT2",
@@ -125,7 +122,7 @@ const char* tables[] = { "AMBULAE", "ASSIN1", "ASSIN2", "ASSIN3", "ASSIN4", "ASS
 "PIZZA", "PORN1", "PORN2", "PORN3", "PORN4", "PROT1", "PROT2", "PROT3", "RACES", "RCHELI1", "RCPLNE1",
 "RCRACE1", "ROCK1", "ROCK2", "ROCK3", "SERG1", "SERG2", "SERG3", "TAXI1", "TAXICUT", "TAXIWA1",
 "TAXIWA2", "TAXIWA3"};
-std::unordered_map<std::string, std::string> Voices::voiceLines;
+
 MissionAudioData* MissionAudioNameSfxAssoc = (MissionAudioData*)0x6B0250;
 
 const int STREAMED_SOUND_MISSION_START = 0x67;
@@ -161,70 +158,55 @@ void __fastcall Voices::LoadRandomizedAudio(cDMAudio* audio, void* edx, int slot
 			[](unsigned char c) { return std::tolower(c); });
 
 		/* Labels which return their own, causing mission text to appear */
-		if (index > 637 && index < 646 || index > 119 && index < 135 || index > 187 
+		if (index > 637 && index < 646 || index > 119 && index < 135 || index > 187
 			&& index < 191 || index == 632 || index == 770)
 			voiceLines[subtitle] = "";
 		else
-		voiceLines[subtitle] = newName;
+			voiceLines[subtitle] = newName;
 
 		if (subtitles.count(newName))
 			voiceLines[subtitle] = subtitles[newName];
 	}
 	audio->PreloadMissionAudio(slot, newName.c_str());
 }
-char* __fastcall Voices::FixSubtitles(CText* text, void* edx, char* key)
+const wchar_t* __fastcall Voices::FixSubtitles(CText* text, void* edx, char* key)
 {
+	if (mData.size() == 0)
+		InitialiseText(text);
+
 	std::string _key = key;
+	if (Config::script.Enabled)
+	{
+		if (_key == "TAXW1_5")
+			return L"~g~You need to be in a vehicle!";
+		if (_key == "CUB4_26")
+			return L"~g~Take Pepe, head North into Little Haiti and steal a vehicle.";
+	}
+
 	std::transform(_key.begin(), _key.end(), _key.begin(),
 		[](unsigned char c) { return std::tolower(c); });
 
-	if (voiceLines.count(_key)) {
-		std::string newKey = voiceLines[_key];
-		std::transform(newKey.begin(), newKey.end(), newKey.begin(),
-			[](unsigned char c) { return std::toupper(c); });
+	if (voiceLines.count(_key))
+		_key = voiceLines[_key];
 
-		memcpy(key, newKey.c_str(), newKey.size());
-		key[newKey.size()] = '\0';
+	std::transform(_key.begin(), _key.end(), _key.begin(),
+		[](unsigned char c) { return std::toupper(c); });
 
-		LoadTable(text, key);
-	}
-	if (std::strlen(text->GetText(key)) == 0 && previousTable != "")
-		text->LoadMissionText(previousTable.c_str());
-
-	return text->GetText(key);
+	return mData[_key].c_str();
 }
-char* __fastcall Voices::FixDeathRowText(CText* text, void* edx, char* key)
+void Voices::UpdateText(CKeyArray& array)
 {
-	if (key == std::string("M_PASSN"))
-		text->LoadMissionText(previousTable.c_str());
-
-	return text->GetText(key);
+	for (int i = 0; i < array.size; i++)
+		mData[array.data[i].szTokenName] = array.data[i].offset;
 }
-void Voices::LoadTable(CText* text, char* key)
+void Voices::InitialiseText(CText* text)
 {
+	UpdateText(text->tKeyMain);
 	for (int i = 0; i < sizeof(tables) / 4; i++)
 	{
 		text->LoadMissionText(tables[i]);
-		if (std::strlen(text->GetText(key)) > 0)
-			return;
+		UpdateText(text->tKeyMission);
 	}
-	if (previousTable != "")
-		text->LoadMissionText(previousTable.c_str());
-}
-void __fastcall Voices::UseGXTTable(CText* text, void* edx, const char* table)
-{
-	text->LoadMissionText(table);
-	previousText = text;
-	previousTable = table;
-}
-void __fastcall Voices::HasAudioFinished(CRunningScript* script, void* edx, char flag)
-{
-	if (flag)
-	{
-		if (previousTable != "" && script->m_szName != std::string("cell"))
-			previousText->LoadMissionText(previousTable.c_str());
-	}
-	script->UpdateCompareFlag(flag);
 }
 void cDMAudio::PreloadMissionAudio(int slot, const char* text)
 {
@@ -243,13 +225,14 @@ void Voices::Initialise()
 	if (Config::voice.Enabled)
 	{
 		plugin::patch::RedirectCall(0x45AB6B, LoadRandomizedAudio);
-
 		if (Config::voice.MatchSubtitles)
 		{
-			plugin::patch::RedirectCall(0x44AFE7, FixSubtitles);
-			plugin::patch::RedirectCall(0x44AF4B, FixDeathRowText);
-			plugin::patch::RedirectCall(0x62F8A1, UseGXTTable);
-			plugin::patch::RedirectCall(0x45AC16, HasAudioFinished);
+			plugin::patch::RedirectCall(0x44AF4B, FixSubtitles);
+			plugin::patch::RedirectCall(0x45328A, FixSubtitles);
+			plugin::patch::RedirectCall(0x45A645, FixSubtitles);
 		}
 	}
+	// Need this to change the Kaufman/Voodoo text
+	if (Config::voice.Enabled || Config::script.Enabled)
+		plugin::patch::RedirectCall(0x44AFE7, FixSubtitles);
 }

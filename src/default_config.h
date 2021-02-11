@@ -35,18 +35,29 @@ ParkedVehiclesRandomizer = true
 ###########################################
 # Colour Randomizer
 
+# Vehicles
 RandomizeVehicleColours = true
+
+# HUD
 RandomizeHUDColours = true
-RandomizeMarkerColours = true
-
-RandomizePickupColours = true
-RandomizeLazerScopeColour = true
-RandomizeExplosionColours = true
-
-# If both below are false with HUD colours enabled, they will be normal random colours
-
-RainbowHUDColours = false
 VibrantStaticHUDColours = false
+RainbowHUDColours = false
+
+# Markers
+RandomizeMarkerColours = true
+StaticMarkerColours = false
+
+# Pickups
+RandomizePickupColours = true
+StaticPickupColours = false
+
+# Lazer Scope
+RandomizeLazerScopeColour = true
+StaticLazerScopeColours = false
+
+# Explosions
+RandomizeExplosionColours = true
+StaticExplosionColours = false
 
 ###########################################
 # Traffic Randomizer
@@ -80,7 +91,7 @@ WeaponRandomizer = true
 ReduceMeleeWeapons = false
 
 # Allows peds to be given the missile - WARNING: When dropped this flashes heavily, may effect certain
-# people with epilepsy or sensitivity
+# people with epilepsy or sensitivity - may also cause game crashes
 
 AllowRocketMissile = false
 
@@ -112,8 +123,36 @@ EnableKeycard = true
 MoneyInBriefcase = true
 
 ###########################################
-# Clothes Randomizer
-ClothesRandomizer = true
+# Player Randomizer
+PlayerRandomizer = true
+
+RandomizePlayerOutfits = true
+IncludeSpecialModels = true
+
+RandomizeOnFades = true
+
+###########################################
+# Ped Randomizer
+PedRandomizer = true
+
+# Special models will also be able to become player models
+IncludePlayerModels = true
+
+# Randomizes generic peds on the streets, in vehicles and some missions
+RandomizeGenericPeds = true
+
+# Randomizes cops on the streets, in vehicles and at roadblocks
+RandomizeCopPeds = true
+
+###########################################
+# Mission Randomizer
+MissionRandomizer = true
+
+# Enter your own seed - if empty, the seed will be random
+CustomSeed = ""
+
+# Force a specific mission
+ForcedMission = 0
 
 ###########################################
 # Cutscene Randomizer

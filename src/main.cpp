@@ -8,8 +8,10 @@
 #include "Colours.h"
 #include "Voices.h"
 #include "Pickups.h"
-#include "Clothes.h"
+#include "Player.h"
+#include "Ped.h"
 #include "Cutscenes.h"
+#include "Missions.h"
 #include "Credits.h"
 #include "Autosave.h"
 
@@ -25,8 +27,10 @@ public:
 		Colours::Initialise();
 		Voices::Initialise();
 		Pickups::Initialise();
-		Clothes::Initialise();
+		Player::Initialise();
+		Ped::Initialise();
 		Cutscenes::Initialise();
+		Missions::Initialise();
 		Credits::Initialise();
 		Autosave::Initialise();
 	}

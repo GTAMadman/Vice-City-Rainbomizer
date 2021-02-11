@@ -39,7 +39,8 @@ int Traffic::RandomizeTraffic()
 	for (int i = 0; i < 21; i++)
 	{
 		model = GetRandomLoadedVehicle();
-		if (!IsVehicleAllowed(model) || ModelInfo::IsBlacklistedVehicle(model) || model < 130 || model > 236)
+		if (!IsVehicleAllowed(model) || ModelInfo::IsBlacklistedVehicle(model) 
+			 || model < 130 || model > 236 && IsModelLoaded(model))
 			continue;
 
 		return model;
@@ -55,7 +56,8 @@ int Traffic::RandomizePoliceTraffic()
 	for (int i = 0; i < 21; i++)
 	{
 		model = GetRandomLoadedVehicle();
-		if (!IsVehicleAllowed(model) || ModelInfo::IsBlacklistedVehicle(model) || model < 130 || model > 236)
+		if (!IsVehicleAllowed(model) || ModelInfo::IsBlacklistedVehicle(model) 
+			 || model < 130 || model > 236 && IsModelLoaded(model))
 			continue;
 
 		return model;
@@ -143,16 +145,16 @@ void* __fastcall Traffic::RandomizeRoadblocks(CVehicle* vehicle, void* edx, int 
 		for (int i = 0; i < 21; i++)
 		{
 			newModel = GetRandomLoadedVehicle();
-			if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel) ||
-				newModel < 130 || newModel > 236)
+			if (ModelInfo::IsMiscVehicle(newModel) || newModel < 130 || newModel > 236
+				|| ModelInfo::IsBlacklistedVehicle(newModel) && IsModelLoaded(model))
 				continue;
 
 			break;
 		}
 
 		// Additional check just in case the loop ended with an invalid model
-		if (ModelInfo::IsMiscVehicle(newModel) || ModelInfo::IsBlacklistedVehicle(newModel) ||
-			newModel < 130 || newModel > 236)
+		if (ModelInfo::IsMiscVehicle(newModel) || newModel < 130 || newModel > 236
+			|| ModelInfo::IsBlacklistedVehicle(newModel))
 			newModel = model;
 	}
 

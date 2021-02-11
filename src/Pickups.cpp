@@ -52,8 +52,8 @@ void Pickups::Initialise()
 		if (allowed_pickups.size() == 0)
 			return;
 
-		for (int addr : {0x4561CC, 0x4564E3, 0x457E99, 0x45B8BA, 0x51C7C9, 0x60823C,
-			0x62EAE3, 0x62EC20, 0x62FBD3})
+		for (int addr : {0x4561CC, 0x4564E3, 0x457E99, 0x45B8BA, 
+			0x60823C, 0x51C7C9, 0x62EAE3, 0x62EC20, 0x62FBD3})
 			plugin::patch::RedirectCall(addr, RandomizePickups);
 
 		if (Config::pickups.randomizePedDrops)

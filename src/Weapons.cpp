@@ -21,7 +21,6 @@ int __fastcall Weapons::GiveRandomizedWeapon(CPed* ped, void* edx, eWeaponType w
 	}
 
 	int newWeapon = GetRandomWeapon();
-
 	int weaponModel = CWeaponInfo::GetWeaponInfo((eWeaponType)newWeapon)->m_nModelId;
 
 	// Load the weapon model before setting it

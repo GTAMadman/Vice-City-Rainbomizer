@@ -1,9 +1,8 @@
 #include "Credits.h"
-#include "CFont.h"
 
 std::vector<wchar_t*> lead_developers = { L"GTAMadman", L"Parik" };
 std::vector<wchar_t*> contributors = {L"123robot", L"Fryterp23"};
-std::vector<wchar_t*> beta_testers = {L"HugoOne", L"VodCrack", L"SpeedyFolf", L"AdsSal"};
+std::vector<wchar_t*> beta_testers = { L"AdsSal", L"HugoOne", L"SpeedyFolf", L"TubewayArmy", L"VodCrack" };
 
 void Credits::PrintCredits(float x, float y, const wchar_t* text, int* position, float offset)
 {

@@ -129,8 +129,23 @@ void __fastcall Colours::RandomizeMarkerColours(C3dMarker* marker)
 {
 	CRGBA original = marker->m_colour;
 
-	marker->m_colour = GetRainbowColour(marker->m_colour.r, marker->m_colour.g, marker->m_colour.b);
-	marker->m_colour.a = original.a;
+	if (Config::colours.staticMarkerColours)
+	{
+		int pattern = marker->m_colour.r + marker->m_colour.g + marker->m_colour.b;
+		if (GetColour(pattern, 0) == 0)
+		{
+			Pattern obj = { pattern, {RandomNumber(1, 255), RandomNumber(1, 255), RandomNumber(1, 255)} };
+			Patterns.push_back(obj);
+		}
+		marker->m_colour.r = GetColour(pattern, 0);
+		marker->m_colour.g = GetColour(pattern, 1);
+		marker->m_colour.b = GetColour(pattern, 2);
+	}
+	else
+	{
+		marker->m_colour = GetRainbowColour(marker->m_colour.r, marker->m_colour.g, marker->m_colour.b);
+		marker->m_colour.a = original.a;
+	}
 
 	marker->Render();
 	marker->m_colour = original;
@@ -138,39 +153,87 @@ void __fastcall Colours::RandomizeMarkerColours(C3dMarker* marker)
 void Colours::RandomizePickupColours(int coronaID, char r, char g, char b, char a, CVector const& posn, float radius,
 	float farClip, char arg8, char flare, char refl, char arg11, char arg12, float normalAngle, bool arg14, float arg15)
 {
-	int pattern = coronaID;
-	if (GetPickupsColour(pattern, 0) == 0)
+	CRGBA colour;
+	if (Config::colours.staticPickupColours)
 	{
-		Pattern col = { pattern, {r, g, b} };
-		PickupPatterns.push_back(col);
+		int pattern = coronaID;
+		if (GetColour(pattern, 0) == 0)
+		{
+			Pattern obj = { pattern, {RandomNumber(1, 255), RandomNumber(1, 255), RandomNumber(1, 255)} };
+			Patterns.push_back(obj);
+		}
+		colour.r = GetColour(pattern, 0);
+		colour.g = GetColour(pattern, 1);
+		colour.b = GetColour(pattern, 2);
 	}
-	int origR = GetPickupsColour(pattern, 0);
-	int origG = GetPickupsColour(pattern, 1);
-	int origB = GetPickupsColour(pattern, 2);
+	else
+	{
+		int pattern = coronaID;
+		if (GetPickupsColour(pattern, 0) == 0)
+		{
+			Pattern col = { pattern, {r, g, b} };
+			PickupPatterns.push_back(col);
+		}
+		int origR = GetPickupsColour(pattern, 0);
+		int origG = GetPickupsColour(pattern, 1);
+		int origB = GetPickupsColour(pattern, 2);
 
-	CRGBA rainbow = GetRainbowColour(origR, origG, origB);
+		colour = GetRainbowColour(origR, origG, origB);
+	}
 
-	CCoronas::RegisterCorona(coronaID, rainbow.r, rainbow.g, rainbow.b, a, posn, radius, farClip, arg8, flare,
+	CCoronas::RegisterCorona(coronaID, colour.r, colour.g, colour.b, a, posn, radius, farClip, arg8, flare,
 		refl, arg11, arg12, normalAngle, arg14, arg15);
 }
 void Colours::RandomizeMiscColours(int coronaID, char r, char g, char b, char a, CVector const& posn, float radius,
 	float farClip, char arg8, char flare, char refl, char arg11, char arg12, float normalAngle, bool arg14, float arg15)
 {
-	static int origR = 200;
-	static int origG = 0;
-	static int origB = 0;
+	CRGBA colour;
+	if (Config::colours.staticLazerScopeColours)
+	{
+		int pattern = coronaID;
+		if (GetColour(pattern, 0) == 0)
+		{
+			Pattern obj = { pattern, {RandomNumber(1, 255), RandomNumber(1, 255), RandomNumber(1, 255)} };
+			Patterns.push_back(obj);
+		}
+		colour.r = GetColour(pattern, 0);
+		colour.g = GetColour(pattern, 1);
+		colour.b = GetColour(pattern, 2);
+	}
+	else
+	{
+		static int origR = 200;
+		static int origG = 0;
+		static int origB = 0;
 
-	CRGBA rainbow = GetRainbowColour(origR, origG, origB);
+		colour = GetRainbowColour(origR, origG, origB);
+	}
 
-	CCoronas::RegisterCorona(coronaID, rainbow.r, rainbow.g, rainbow.b, a, posn, radius, farClip, arg8, flare,
+	CCoronas::RegisterCorona(coronaID, colour.r, colour.g, colour.b, a, posn, radius, farClip, arg8, flare,
 		refl, arg11, arg12, normalAngle, arg14, arg15);
 }
 void Colours::RandomizeExplosionColours(int coronaID, char r, char g, char b, char a, CVector const& posn, float radius,
 	float farClip, RwTexture* texture, char flare, char refl, char arg11, char arg12, float normalAngle, bool arg14, float arg15)
 {
-	CRGBA rainbow = GetRainbowColour(r, g, b);
+	CRGBA colour;
+	if (Config::colours.staticExplosionColours)
+	{
+		int pattern = coronaID;
+		if (GetColour(pattern, 0) == 0)
+		{
+			Pattern obj = { pattern, {RandomNumber(1, 255), RandomNumber(1, 255), RandomNumber(1, 255)} };
+			Patterns.push_back(obj);
+		}
+		colour.r = GetColour(pattern, 0);
+		colour.g = GetColour(pattern, 1);
+		colour.b = GetColour(pattern, 2);
+	}
+	else
+	{
+		colour = GetRainbowColour(r, g, b);
+	}
 
-	CCoronas::RegisterCorona(coronaID, rainbow.r, rainbow.g, rainbow.b, a, posn, radius, farClip, texture,
+	CCoronas::RegisterCorona(coronaID, colour.r, colour.g, colour.b, a, posn, radius, farClip, texture,
 		flare, refl, arg11, arg12, normalAngle, arg14, arg15);
 }
 CRGBA Colours::GetVibrantColour()

@@ -78,6 +78,10 @@ public:
 		bool pickupsEnabled;
 		bool lazerScopeEnabled;
 		bool explosionsEnabled;
+		bool staticMarkerColours;
+		bool staticPickupColours;
+		bool staticLazerScopeColours;
+		bool staticExplosionColours;
 		void Read(const std::string& line);
 	} colours;
 
@@ -97,11 +101,32 @@ public:
 		void Read(const std::string& line);
 	} pickups;
 
-	inline static struct ClothesRandomizer
+	inline static struct PlayerRandomizer
 	{
 		bool Enabled;
+		bool playerOutfits;
+		bool specialModels;
+		bool randomizeOnFades;
 		void Read(const std::string& line);
-	} clothes;
+	} player;
+
+	inline static struct PedRandomizer
+	{
+		bool Enabled;
+		bool genericPeds;
+		bool copPeds;
+		bool playerModels;
+		void Read(const std::string& line);
+	} ped;
+
+	inline static struct MissionRandomizer
+	{
+		bool Enabled;
+		bool usingSeed;
+		std::string seed;
+		int forcedMission;
+		void Read(const std::string& line);
+	} mission;
 
 	inline static struct VoiceLineRandomizer
 	{

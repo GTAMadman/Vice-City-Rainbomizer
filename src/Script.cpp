@@ -78,7 +78,7 @@ void Script::FixForcedPlayerVehicleType(CRunningScript* script, void* edx, int* 
 	{
 		if (FindPlayerVehicle())
 		{
-			if (FindPlayerVehicle()->m_nSirenExtra || FindPlayerVehicle()->m_nModelIndex == 153)
+			if (FindPlayerVehicle()->UsesSiren() || FindPlayerVehicle()->m_nModelIndex == 153)
 				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
 		}
 	}
@@ -135,6 +135,15 @@ void Script::FixForcedPedVehicleType(CRunningScript* script, void* edx, int* arg
 		CTheScripts::ScriptParams[1].iParam = AlloyWheelsVehicles[RandomNumber(0, AlloyWheelsVehicles.size() - 1)];
 	}
 }
+void __fastcall Script::FixTrojanVoodooForcedVehicle(CRunningScript* script, void* edx, int* arg0, short count)
+{
+	script->CollectParameters(arg0, count);
+	if (GetThreadName() == std::string("cuban4") && CTheScripts::ScriptParams[1].iParam == 142)
+	{
+		if (FindPlayerVehicle())
+			CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+	}
+}
 void* __fastcall Script::CreateRandomizedCab(CVehicle* vehicle, void* edx, int modelId, bool createdBy)
 {
 	int newModel;
@@ -173,6 +182,11 @@ void __fastcall Script::FixBombsAwayVan(CRunningScript* script, void* edx, int* 
 		if (x == -808 && y == -162 && z == 10)
 			CTheScripts::ScriptParams[2].fParam += 15;
 	}
+}
+void __fastcall Script::FixFrozenLoadingScreens(CRunningScript* script, void* edx, char flag)
+{
+	injector::WriteMemory<char>(0xA10B63, 0);
+	script->UpdateCompareFlag(flag);
 }
 void* __fastcall Script::OpenBootFix(CAutomobile* vehicle, void* edx)
 {
@@ -227,7 +241,7 @@ void Script::InitialisePatterns()
 	Patterns.push_back(pattern);
 
 	// RC Baron
-	pattern = { .vehicle = {194}, .allowed = {194, 190, 195, 231}, .allowedType = {"heli"} };
+	pattern = { .vehicle = {194}, .allowed = {194, 195, 231}, .allowedType = {"heli"} };
 	Patterns.push_back(pattern);
 
 	// RC Raider
@@ -247,7 +261,7 @@ void Script::InitialisePatterns()
 	Patterns.push_back(pattern);
 
 	// Speeder - Stunt Boat Challenge
-	pattern = { .vehicle = {182}, .allowed = {182, 202, 223, 160, 176, 190}, .coords = {-90, 105, 5} };
+	pattern = { .vehicle = {182}, .allowed = {182, 223, 160, 176}, .coords = {-90, 105, 5} };
 	Patterns.push_back(pattern);
 
 	// Vigilante
@@ -259,7 +273,7 @@ void Script::InitialisePatterns()
 	Patterns.push_back(pattern); // Using thread only will return the original vehicle
 
 	// Publicity Tour
-	pattern = { .vehicle = {201}, .allowed = {167}, .denied = {217, 227}, .coords = {-872, 1151, 11}, .doors = {4} };
+	pattern = { .vehicle = {201}, .allowed = {167}, .denied = {217, 227, 167, 161}, .coords = {-872, 1151, 11}, .doors = {4} };
 	Patterns.push_back(pattern);
 
 	// The Chase - BF Injection
@@ -303,6 +317,10 @@ void Script::InitialisePatterns()
 	pattern = { .vehicle = {141}, .denied = {178, 215}, .allowedType {"car", "bike"}, .thread = {"lawyer2"} };
 	Patterns.push_back(pattern);
 
+	// Guardian Angels - Infernus
+	pattern = { .vehicle = {141}, .coords = {132, -1211, 15}, .move = {0, 0, 3} };
+	Patterns.push_back(pattern);
+
 	// Guardian Angels - Diaz's Admiral on arrival to the deal
 	pattern = { .vehicle = {175}, .allowed = {167, 161}, .coords = {463, -461, 9}, .doors = {4} };
 	Patterns.push_back(pattern);
@@ -332,15 +350,11 @@ void Script::InitialisePatterns()
 	Patterns.push_back(pattern);
 
 	// Cannon Fodder - Pony
-	pattern = { .vehicle = {143}, .allowedType = {"car", "bike"}, .coords = {-1161, 76, 10}, .move = {-2, 0, 0} };
+	pattern = { .vehicle = {143}, .coords = {-1161, 76, 10}, .move = {-3, 0, 0} };
 	Patterns.push_back(pattern);
 
 	// Naval Engagement - Jetmax
-	pattern = { .vehicle = {223}, .denied = {190}, .allowedType = {"boat"}, .coords = {-722, -1163, 5} };
-	Patterns.push_back(pattern);
-
-	// Trojan Voodoo
-	pattern = { .vehicle = {142}, .allowed = {142}, .coords = {-1071, -608, 9} };
+	pattern = { .vehicle = {223}, .denied = {190, 184, 136}, .allowedType = {"boat"}, .coords = {-722, -1163, 5} };
 	Patterns.push_back(pattern);
 
 	// V.I.P - Taxi
@@ -467,13 +481,7 @@ int Script::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread
 
 	// Added this as a safety precaution
 	if (CheckVehicleModel(origModel) == "unknown")
-	{
-		int newModel = 0;
-		while (!ModelInfo::IsCarModel(newModel))
-			newModel = RandomNumber(130, 236);
-
-		return newModel;
-	}
+		return origModel;
 
 	std::vector<int> vehicles;
 	for (int i = 0; i < Patterns.size(); i++)
@@ -632,6 +640,7 @@ void Script::Initialise()
 		plugin::patch::RedirectCall(0x42AEB0, CreateRandomizedCab);
 		plugin::patch::RedirectCall(0x445267, FixForcedPlayerVehicleType);
 		plugin::patch::RedirectCall(0x445202, FixForcedPedVehicleType);
+		plugin::patch::RedirectCall(0x4536A0, FixTrojanVoodooForcedVehicle);
 		plugin::patch::RedirectCall(0x44AA20, FixBombsAwayVan);
 		plugin::patch::RedirectCall(0x6316CE, OpenBootFix);
 		plugin::patch::SetChar(0x59EF9A, 1); // Unlock police vehicle doors
@@ -639,4 +648,5 @@ void Script::Initialise()
 		if (Patterns.size() == 0)
 			InitialisePatterns();
 	}
+	plugin::patch::RedirectCall(0x458A57, FixFrozenLoadingScreens);
 }

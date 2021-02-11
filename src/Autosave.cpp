@@ -13,7 +13,12 @@ void __fastcall Autosave::RequestAutosave(CRunningScript* script, void* edx, int
 		script->m_bIsActive = false;
 
 		if (FindPlayerVehicle())
+		{
+			if (Config::mission.Enabled) // Fix end of mission teleporting in vehicles
+				FindPlayerPed()->Teleport(FindPlayerEntity()->GetPosition());
+
 			FindPlayerPed()->m_bInVehicle = false;
+		}
 
 		char* file = MakeValidSaveName(slot - 1);
 		int handle = CFileMgr::OpenFile(file, "wb");
