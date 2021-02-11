@@ -12,8 +12,11 @@ Logo created by Catmare
 - **Traffic Randomizer**: Randomizes vehicles that spawn in traffic, including law enforcement vehicles.
 - **Weapon Randomizer**: Randomizes the weapons that are given to other peds throughout the game.
 - **Pickups Randomizer**: Randomizes pickups throughout the world, including pickups given to you by missions and dropped by peds.
-- **Clothes Randomizer**: Randomizes the player clothing when the game changes the player outfits.
 - **Voice Line Randomizer**: Randomizes the voice lines played in missions and phonecalls.
+- **Cutscene Randomizer**: Randomizes the models used in motion-captured cutscenes.
+- **Mission Randomizer**: Randomizes which mission is started by each mission marker. When the randomized mission is complete, the game progresses as if you completed the original.
+- **Player Randomizer**: Randomizes the player outfit between the player and special models on fades.
+- **Ped Randomizer**: Randomizes generic peds, police peds and mission peds.
 - **Autosave**: Automatically creates a savegame in slot 8 upon completing a mission. The autosave slot can be changed in the config file.
 
 ## Supported Versions
@@ -26,9 +29,9 @@ Check this link for a v1.0 EXE - https://cdn.discordapp.com/attachments/68199709
 
 ## Configuration
 
-If you wish to change any of the mod's functionalities, for example to disable a specific randomizer, a configuration file (`Rainbomizer.cfg`) has been provided with the mod. The config file is located in the game's root directory.
+If you wish to change any of the mod's functionalities, for example to disable a specific randomizer, a configuration file (`config.cfg`) has been provided with the mod. The config file is located in the ('rainbomizer') folder in the game's root directory.
 
-The default configuration file is in the main repository, `Rainbomizer.cfg`, and is automatically created by the mod if it doesn't exist in the game folder.
+The default configuration file is in the main repository, `config.cfg`, and is automatically created by the mod if it doesn't exist in the game folder.
 
 The configuration file is in the CFG format.
 
@@ -42,7 +45,10 @@ More information about how to configure specific randomizers is provided in the 
 
 1) Downgrade to 1.0 (download link available above)
 2) Download the latest version from the releases page: https://github.com/GTAMadman/Vice-City-Rainbomizer/releases
-3) Put the ASI and CFG files into your GTA Vice City directory.
+3) Put the ASI file and ('rainbomizer') folder into your GTA Vice City directory.
+
+- It is recommended to not use CLEO with this mod as it can prevent the autosave function from working properly.
+- It is recommended to run the game with one core affinity to prevent game freezes (Vice City issue).
 
 ## Credits
 
@@ -50,6 +56,10 @@ More information about how to configure specific randomizers is provided in the 
 
 - [GTA Madman](https://github.com/gta_madman) - Creation and implementation of the ASI.
 - [Parik27](https://github.com/parik27) - Helping with function hooks and suggestions.
+
+### Contributors
+- [123robot](https://www.twitch.tv/123robot) - Testing and helping with parts of the mod
+- [Fryterp23](https://www.twitch.tv/fryterp23) - Extensive testing of the mod
 
 #### Original Concept
 
@@ -59,12 +69,11 @@ More information about how to configure specific randomizers is provided in the 
 
 #### Beta Testers
 
-- [Fryterp23](https://www.twitch.tv/fryterp23) - Streaming and carrying out extensive testing of the mod
 - [Hugo_One](https://www.twitch.tv/hugo_one) - Streaming the mod
+- [Vod_Crack](https://www.twitch.tv/vod_crack) - Testing and streaming of the mod
 - [SpeedyFolf](https://www.twitch.tv/speedyfolf) - Testing and streaming the mod
-- [123robot](https://www.twitch.tv/123robot) - Testing and streaming the mod
+= [TubewayArmy](https://www.speedrun.com/user/TubewayArmy) - Testing and streaming the mod
 - [Ads_Sal](https://www.twitch.tv/ads_sal) - Testing the mod
-- [Vod_Crack](https://www.twitch.tv/vod_crack) - Streaming and testing of the mod
 
 ## Used Libraries
 
