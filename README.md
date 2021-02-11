@@ -45,7 +45,7 @@ More information about how to configure specific randomizers is provided in the 
 
 1) Downgrade to 1.0 (download link available above)
 2) Download the latest version from the releases page: https://github.com/GTAMadman/Vice-City-Rainbomizer/releases
-3) Put the ASI file and ('rainbomizer') folder into your GTA Vice City directory.
+3) Put the ASI file and (`rainbomizer`) folder into your GTA Vice City directory.
 
 - It is recommended to not use CLEO with this mod as it can prevent the autosave function from working properly.
 - It is recommended to run the game with one core affinity to prevent game freezes (Vice City issue).
