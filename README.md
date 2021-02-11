@@ -72,7 +72,7 @@ More information about how to configure specific randomizers is provided in the 
 - [Hugo_One](https://www.twitch.tv/hugo_one) - Streaming the mod
 - [Vod_Crack](https://www.twitch.tv/vod_crack) - Testing and streaming of the mod
 - [SpeedyFolf](https://www.twitch.tv/speedyfolf) - Testing and streaming the mod
-= [TubewayArmy](https://www.speedrun.com/user/TubewayArmy) - Testing and streaming the mod
+- [TubewayArmy](https://www.speedrun.com/user/TubewayArmy) - Testing and streaming the mod
 - [Ads_Sal](https://www.twitch.tv/ads_sal) - Testing the mod
 
 ## Used Libraries
