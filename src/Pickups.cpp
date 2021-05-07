@@ -1,5 +1,7 @@
 #include "Pickups.h"
 
+uint32_t Pickups::seed = std::hash<std::string>{}(Config::pickups.seed);
+std::mt19937 Pickups::pickupsEngine{ Pickups::seed };
 std::vector<int> Pickups::allowed_pickups;
 std::vector<int> Pickups::original_pickups = {259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270,
 271, 272, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 292, 365, 
@@ -7,13 +9,21 @@ std::vector<int> Pickups::original_pickups = {259, 260, 261, 262, 263, 264, 265,
 int Pickups::RandomizePickups(CVector posn, int modelID, char arg3, int arg4, int arg5, bool arg6, char* msg)
 {
 	int newPickup = modelID;
-	
+
 	for (int i = 0; i < original_pickups.size(); i++)
 	{
 		if (modelID == original_pickups[i] || modelID == 291)
 		{
-			newPickup = allowed_pickups[RandomNumber(0, allowed_pickups.size() - 1)];
-			break;
+			if (Config::pickups.usingSeed)
+			{
+				newPickup = allowed_pickups[GetRandomUsingCustomSeed(0, allowed_pickups.size() - 1)];
+				break;
+			}
+			else
+			{
+				newPickup = allowed_pickups[RandomNumber(0, allowed_pickups.size() - 1)];
+				break;
+			}
 		}
 	}
 	return CPickups::GenerateNewOne(posn, newPickup, arg3, arg4, arg5, arg6, msg);
@@ -26,6 +36,11 @@ bool Pickups::GiveMoneyForBriefcase(unsigned short model, int plrIndex)
 			FindPlayerPed()->GetPlayerInfoForThisPlayerPed()->m_nMoney += RandomNumber(1, 500);
 	}
 	return CPickups::GivePlayerGoodiesWithPickUpMI(model, plrIndex);
+}
+int Pickups::GetRandomUsingCustomSeed(int min, int max)
+{
+	std::uniform_int_distribution<int> random(min, max);
+	return random(pickupsEngine);
 }
 void Pickups::Initialise()
 {

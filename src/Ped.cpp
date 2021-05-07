@@ -9,11 +9,11 @@ void Ped::ChooseRandomPedToLoad(int modelId, int flags)
 		newModel = GetRandomGenericPedBasedOnModel(modelId, true);
 		if (!IsModelLoaded(newModel))
 		{
-			CStreaming::RequestModel(newModel, flags);
+			CStreaming::RequestModel(newModel, 0);
 			return;
 		}
 	}
-	CStreaming::RequestModel(modelId, flags);
+	CStreaming::RequestModel(modelId, 0);
 }
 void* __fastcall Ped::RandomizeGenericPeds(CCivilianPed* ped, void* edx, ePedType type, int model)
 {

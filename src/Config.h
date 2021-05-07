@@ -98,6 +98,8 @@ public:
 		bool briefcase;
 		bool keycard;
 		bool briefcaseMoney;
+		std::string seed;
+		bool usingSeed;
 		void Read(const std::string& line);
 	} pickups;
 

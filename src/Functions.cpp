@@ -11,7 +11,7 @@ void Functions::LoadModel(int modelID)
 {
 	if (CStreaming::ms_aInfoForModel[modelID].m_nLoadState != 1)
 	{
-		CStreaming::RequestModel(modelID, 1);
+		CStreaming::RequestModel(modelID, 0);
 		CStreaming::LoadAllRequestedModels(false);
 	}
 }
@@ -66,6 +66,10 @@ int Functions::GetNumberOfVehiclesLoaded()
 int Functions::GetRandomLoadedVehicle()
 {
 	return CStreaming::ms_vehiclesLoaded[RandomNumber(0, GetNumberOfVehiclesLoaded() - 1)];
+}
+bool Functions::GetWaterLevel(float fX, float fY, float fZ, float* pfOutLevel, bool bDontCheckZ)
+{
+	return plugin::CallAndReturn<bool, 0x5C2C80>(fX, fY, fZ, pfOutLevel, bDontCheckZ);
 }
 void Functions::SortOutCollisionAfterLoad()
 {

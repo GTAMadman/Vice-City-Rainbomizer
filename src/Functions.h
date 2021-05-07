@@ -30,6 +30,7 @@ public:
 	static int GetRandomLoadedVehicle();
 	static bool IsRampageRunning();
 	static void PlayAudioForCredits();
+	static bool GetWaterLevel(float fX, float fY, float fZ, float* pfOutLevel, bool bDontCheckZ);
 
 	enum eInterior
 	{

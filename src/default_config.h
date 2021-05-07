@@ -122,6 +122,9 @@ EnableKeycard = true
 # Randomize a small amount of money given by a briefcase pickup
 MoneyInBriefcase = true
 
+# Enter your own seed - if empty, the seed will be random
+PickupsCustomSeed = ""
+
 ###########################################
 # Player Randomizer
 PlayerRandomizer = true

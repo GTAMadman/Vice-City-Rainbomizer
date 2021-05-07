@@ -131,6 +131,10 @@ void Config::PickupsRandomizer::Read(const std::string& line)
 	ReadConfigBool("EnableKeycard", line, keycard);
 
 	ReadConfigBool("MoneyInBriefcase", line, briefcaseMoney);
+	ReadConfigString("PickupsCustomSeed", line, seed);
+
+	if (seed != "")
+		usingSeed = true;
 }
 void Config::PlayerRandomizer::Read(const std::string& line)
 {
@@ -186,7 +190,7 @@ void Config::WriteConfig()
 void Config::Initialise()
 {
 	if (!std::filesystem::exists(Functions::GetRainbomizerDir()))
-		CreateDirectory(Functions::GetRainbomizerDir().c_str(), NULL);
+		return;
 
 	if (!std::filesystem::exists(ConfigName))
 		WriteConfig();

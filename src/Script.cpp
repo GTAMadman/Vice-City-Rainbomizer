@@ -188,6 +188,16 @@ void __fastcall Script::FixFrozenLoadingScreens(CRunningScript* script, void* ed
 	injector::WriteMemory<char>(0xA10B63, 0);
 	script->UpdateCompareFlag(flag);
 }
+bool Script::FixWaterLevelCrash(float fX, float fY, float fZ, float* pfOutLevel, bool bDontCheckZ)
+{
+	int x = (((fX + (400.0f)) + (((2048.0f - -2048.0f)) / 2)) / 32);
+	int y = (((fY)+(((2048.0f - -2048.0f)) / 2)) / 32);
+
+	if (x < 0 || x >= 128) return false;
+	if (y < 0 || y >= 128) return false;
+
+	return GetWaterLevel(fX, fY, fZ, pfOutLevel, bDontCheckZ);
+}
 void* __fastcall Script::OpenBootFix(CAutomobile* vehicle, void* edx)
 {
 	if (!vehicle->m_aCarNodes[18])
@@ -648,5 +658,16 @@ void Script::Initialise()
 		if (Patterns.size() == 0)
 			InitialisePatterns();
 	}
+
+	// Additional necessary fixes
 	plugin::patch::RedirectCall(0x458A57, FixFrozenLoadingScreens);
+
+	for (int addr : {0x428769, 0x4402C7, 0x440401, 0x440544, 0x44058E,
+		0x455ABE, 0x47EE06, 0x485B5E, 0x4D286F, 0x4E2B86,
+		0x4E2D51, 0x4E2E9B, 0x4E2FE1, 0x4E3289, 0x4E3454,
+		0x4E359A, 0x509ABC, 0x509BB3, 0x509D25, 0x585C43,
+		0x58ECFA, 0x59A3DC, 0x59A56C, 0x5A169D, 0x5A34BA,
+		0x5A404A, 0x5A4873, 0x5A9F72, 0x5AA654, 0x5AA7D0,
+		0x5AACE4, 0x5B352C, 0x5CA00B, 0x614017, 0x638465})
+		plugin::patch::RedirectCall(addr, FixWaterLevelCrash);
 }

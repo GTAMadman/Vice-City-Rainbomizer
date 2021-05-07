@@ -21,6 +21,7 @@ private:
 	static void* __fastcall OpenBootFix(CAutomobile* vehicle, void* edx);
 	static void __fastcall FixBombsAwayVan(CRunningScript* script, void* edx, int* arg0, short count);
 	static void __fastcall FixFrozenLoadingScreens(CRunningScript* script, void* edx, char flag);
+	static bool FixWaterLevelCrash(float fX, float fY, float fZ, float* pfOutLevel, bool bDontCheckZ);
 	static void AlloyWheelsFix(int modelID, char* thread);
 	struct Pattern
 	{
