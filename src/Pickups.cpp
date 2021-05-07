@@ -1,7 +1,5 @@
 #include "Pickups.h"
 
-uint32_t Pickups::seed = std::hash<std::string>{}(Config::pickups.seed);
-std::mt19937 Pickups::pickupsEngine{ Pickups::seed };
 std::vector<int> Pickups::allowed_pickups;
 std::vector<int> Pickups::original_pickups = {259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270,
 271, 272, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 292, 365, 
@@ -39,6 +37,7 @@ bool Pickups::GiveMoneyForBriefcase(unsigned short model, int plrIndex)
 }
 int Pickups::GetRandomUsingCustomSeed(int min, int max)
 {
+	static std::mt19937 pickupsEngine{ std::hash<std::string>{}(Config::pickups.seed) };
 	std::uniform_int_distribution<int> random(min, max);
 	return random(pickupsEngine);
 }

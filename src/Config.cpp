@@ -156,7 +156,7 @@ void Config::PedRandomizer::Read(const std::string& line)
 void Config::MissionRandomizer::Read(const std::string& line)
 {
 	ReadConfigBool("MissionRandomizer", line, Enabled);
-	ReadConfigString("CustomSeed", line, seed);
+	ReadConfigString("MissionCustomSeed", line, seed);
 	ReadConfigInt("ForcedMission", line, forcedMission);
 
 	if (seed != "")

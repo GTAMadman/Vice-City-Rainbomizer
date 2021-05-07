@@ -152,7 +152,7 @@ RandomizeCopPeds = true
 MissionRandomizer = true
 
 # Enter your own seed - if empty, the seed will be random
-CustomSeed = ""
+MissionCustomSeed = ""
 
 # Force a specific mission
 ForcedMission = 0
