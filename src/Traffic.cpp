@@ -110,7 +110,7 @@ bool Traffic::FixDeadPedsInFrontOfRCVehicles(int modelID)
 		return false;
 	return true;
 }
-void* Traffic::RandomizeCarPeds(ePedType type, int model, CVector posn, int arg3)
+void* Traffic::RandomizeCarPeds(ePedType type, int model, CVector& posn, int arg3)
 {
 	switch (type)
 	{

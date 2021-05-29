@@ -25,7 +25,7 @@ private:
 	static int RandomizeTraffic();
 	static int RandomizePoliceTraffic();
 	static void* __fastcall FixTrafficVehicles(CVehicle* vehicle, void* edx, int model, char createdBy);
-	static void* RandomizeCarPeds(ePedType type, int model, CVector posn, int arg3);
+	static void* RandomizeCarPeds(ePedType type, int model, CVector& posn, int arg3);
 	static void* __fastcall RandomizeRoadblocks(CVehicle* vehicle, void* edx, int model, char createdBy);
 	static void FixEmptyPoliceCars(CVehicle* vehicle);
 	static void FixBoatSpawns(CPhysical* entity);
