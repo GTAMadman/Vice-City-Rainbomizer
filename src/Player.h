@@ -2,6 +2,10 @@
 #include "plugin.h"
 #include "Config.h"
 #include "Functions.h"
+#include "CAnimBlendClumpData.h"
+#include "CAnimBlendAssociation.h"
+#include "common.h"
+#include "rw/rwplcore.h"
 
 class Player : Functions
 {
@@ -13,7 +17,9 @@ private:
 	static std::vector<std::string> all_outfits;
 	static void __fastcall RandomizeOutfit(CPed* ped, void* edx, const char* modelName);
 	static void __fastcall FixTwoBitHit(CRunningScript* script, void* edx, char flag);
+	static void __fastcall FixAnimAfterModelChange(CPed* ped);
 	static void GivePlayerRandomOutfit();
 	static void RandomizeOutfitOnFade();
 	static void ChangePlayerModel(const char* modelName);
+	inline static CAnimBlendAssociation* association = nullptr;
 };

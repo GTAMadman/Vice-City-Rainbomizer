@@ -15,6 +15,7 @@ public:
 	{
 		bool replays;
 		bool credits;
+		bool easterEggs;
 		void Read(const std::string& line);
 	} general;
 
@@ -25,6 +26,7 @@ public:
 		bool rcEnabled;
 		bool chopperCheckpointEnabled;
 		bool pizzaBoyEnabled;
+		int forcedVehicle = 0;
 		void Read(const std::string& line);
 	} script;
 
@@ -38,6 +40,7 @@ public:
 	inline static struct ParkedVehiclesRandomizer
 	{
 		bool Enabled;
+		int forcedVehicle = 0;
 		void Read(const std::string& line);
 	} parked;
 
@@ -48,23 +51,24 @@ public:
 		bool roadblocksEnabled;
 		bool deadDodo;
 		bool airTrain;
-
 		bool cars;
 		bool bikes;
 		bool RC;
 		bool boats;
 		bool helis;
-		bool forceVehicle;
-		int forcedVehicleID = 0;
+		int forcedVehicle = 0;
 		void Read(const std::string& line);
 	} traffic;
 
 	inline static struct WeaponRandomizer
 	{
 		bool Enabled;
+		bool randomizePlayerWeapons;
+		bool randomizeRampageWeapons;
 		bool RocketEnabled;
 		bool tearGasEnabled;
 		bool ReduceMeleeWeaponsEnabled;
+		int forcedWeapon = 0;
 		void Read(const std::string& line);
 	} weapons;
 
@@ -72,7 +76,6 @@ public:
 	{
 		bool vehicleEnabled;
 		bool textEnabled;
-		bool vibrantOnlyEnabled;
 		bool rainbowTextEnabled;
 		bool markersEnabled;
 		bool pickupsEnabled;
@@ -89,6 +92,7 @@ public:
 	{
 		bool Enabled;
 		bool randomizePedDrops;
+		bool randomizeMetalDetectorWeps;
 		bool weapons;
 		bool health;
 		bool armour;
@@ -100,6 +104,7 @@ public:
 		bool briefcaseMoney;
 		std::string seed;
 		bool usingSeed;
+		int forcedPickup = 0;
 		void Read(const std::string& line);
 	} pickups;
 
@@ -109,15 +114,18 @@ public:
 		bool playerOutfits;
 		bool specialModels;
 		bool randomizeOnFades;
+		std::string forcedModel = "";
 		void Read(const std::string& line);
 	} player;
 
 	inline static struct PedRandomizer
 	{
 		bool Enabled;
+		bool specialModels;
 		bool genericPeds;
 		bool copPeds;
 		bool playerModels;
+		int forcedPed = 0;
 		void Read(const std::string& line);
 	} ped;
 

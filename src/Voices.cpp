@@ -123,6 +123,12 @@ const char* tables[] = { "AMBULAE", "ASSIN1", "ASSIN2", "ASSIN3", "ASSIN4", "ASS
 "RCRACE1", "ROCK1", "ROCK2", "ROCK3", "SERG1", "SERG2", "SERG3", "TAXI1", "TAXICUT", "TAXIWA1",
 "TAXIWA2", "TAXIWA3"};
 
+std::map<std::string, wchar_t*> tokens =
+{
+	{"TAXW1_5", L"~g~You need to be in a vehicle!"},
+	{"CUB4_26", L"~g~Take Pepe, head North into Little Haiti and steal a vehicle."}
+};
+
 MissionAudioData* MissionAudioNameSfxAssoc = (MissionAudioData*)0x6B0250;
 
 const int STREAMED_SOUND_MISSION_START = 0x67;
@@ -175,14 +181,6 @@ const wchar_t* __fastcall Voices::FixSubtitles(CText* text, void* edx, char* key
 		InitialiseText(text);
 
 	std::string _key = key;
-	if (Config::script.Enabled)
-	{
-		if (_key == "TAXW1_5")
-			return L"~g~You need to be in a vehicle!";
-		if (_key == "CUB4_26")
-			return L"~g~Take Pepe, head North into Little Haiti and steal a vehicle.";
-	}
-
 	std::transform(_key.begin(), _key.end(), _key.begin(),
 		[](unsigned char c) { return std::tolower(c); });
 
@@ -197,7 +195,17 @@ const wchar_t* __fastcall Voices::FixSubtitles(CText* text, void* edx, char* key
 void Voices::UpdateText(CKeyArray& array)
 {
 	for (int i = 0; i < array.size; i++)
+	{
+		if (Config::script.Enabled)
+		{
+			if (tokens.count(array.data[i].szTokenName))
+			{
+				mData[array.data[i].szTokenName] = tokens.at(array.data[i].szTokenName);
+				continue;
+			}
+		}
 		mData[array.data[i].szTokenName] = array.data[i].offset;
+	}
 }
 void Voices::InitialiseText(CText* text)
 {
@@ -223,16 +231,13 @@ char* CText::LoadMissionText(const char* text)
 void Voices::Initialise()
 {
 	if (Config::voice.Enabled)
-	{
 		plugin::patch::RedirectCall(0x45AB6B, LoadRandomizedAudio);
-		if (Config::voice.MatchSubtitles)
-		{
-			plugin::patch::RedirectCall(0x44AF4B, FixSubtitles);
-			plugin::patch::RedirectCall(0x45328A, FixSubtitles);
-			plugin::patch::RedirectCall(0x45A645, FixSubtitles);
-		}
-	}
-	// Need this to change the Kaufman/Voodoo text
+
 	if (Config::voice.Enabled || Config::script.Enabled)
+	{
+		plugin::patch::RedirectCall(0x44AF4B, FixSubtitles);
+		plugin::patch::RedirectCall(0x45328A, FixSubtitles);
+		plugin::patch::RedirectCall(0x45A645, FixSubtitles);
 		plugin::patch::RedirectCall(0x44AFE7, FixSubtitles);
+	}
 }

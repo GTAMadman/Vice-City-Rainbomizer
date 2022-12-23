@@ -67,6 +67,20 @@ bool ModelInfo::IsBlacklistedVehicle(int modelID)
 	}
 	return false;
 }
+bool ModelInfo::IsPoliceModel(int modelID)
+{
+	switch (modelID)
+	{
+	case 156:
+	case 157:
+	case 220:
+	case 162:
+	case 163:
+	case 236:
+		return true;
+	}
+	return false;
+}
 bool ModelInfo::IsEmergencyVehicle(int modelID)
 {
 	switch (modelID)

@@ -21,6 +21,9 @@ void __fastcall Parked::ParkedVehiclesRandomizer(CCarGenerator* gen)
 	while ((newModel = RandomNumber(130, 236)), ModelInfo::IsMiscVehicle(newModel)
 		|| ModelInfo::IsBlacklistedVehicle(newModel));
 
+	if (Config::parked.forcedVehicle >= 130 && Config::parked.forcedVehicle <= 236)
+		newModel = Config::parked.forcedVehicle;
+
 	gen->m_nModelId = (eVehicleModel)newModel;
 
 	gen->DoInternalProcessing();
@@ -50,6 +53,9 @@ void* __fastcall Parked::CarparkVehiclesRandomizer(CVehicle* vehicle, void* edx,
 			|| ModelInfo::IsBoatModel(newModel) || newModel < 130 || newModel > 236 || !IsModelLoaded(newModel))
 			newModel = model;
 	}
+
+	if (Config::parked.forcedVehicle >= 130 && Config::parked.forcedVehicle <= 236)
+		newModel = Config::parked.forcedVehicle;
 
 	if (ModelInfo::IsBoatModel(newModel))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(newModel, createdBy);

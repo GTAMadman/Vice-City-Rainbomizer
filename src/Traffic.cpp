@@ -5,8 +5,8 @@ int Traffic::ChooseModelToLoad()
 	int model;
 
 	// Forced vehicles
-	if (Config::traffic.forceVehicle)
-		return Config::traffic.forcedVehicleID;
+	if (Config::traffic.forcedVehicle >= 130 && Config::traffic.forcedVehicle <= 236)
+		return Config::traffic.forcedVehicle;
 
 	for (int i = 0; i < 21; i++)
 	{
@@ -23,9 +23,9 @@ int Traffic::RandomizeTraffic()
 	int model;
 
 	// Forced vehicles
-	if (Config::traffic.forceVehicle)
+	if (Config::traffic.forcedVehicle >= 130 && Config::traffic.forcedVehicle <= 236)
 	{
-		model = Config::traffic.forcedVehicleID;
+		model = Config::traffic.forcedVehicle;
 		if (!IsModelLoaded(model))
 			LoadModel(model);
 
@@ -53,6 +53,9 @@ int Traffic::RandomizePoliceTraffic()
 	if (GetNumberOfVehiclesLoaded() < 1) // Added as a safety precaution
 		return 156;
 
+	if (Config::traffic.forcedVehicle >= 130 && Config::traffic.forcedVehicle <= 236)
+		return Config::traffic.forcedVehicle;
+
 	for (int i = 0; i < 21; i++)
 	{
 		model = GetRandomLoadedVehicle();
@@ -64,19 +67,19 @@ int Traffic::RandomizePoliceTraffic()
 	}
 	return 156;
 }
-void __fastcall Traffic::PedEnterCar(CPed* ped, void* edx)
+void __fastcall Traffic::PedEnterCar(CPed* ped)
 {
 	if (ModelInfo::IsRCModel(ped->m_pVehicle->m_nModelIndex))
 	{
 		if (Config::rc.DriveRCVehiclesEnabled)
-			ped->IsPlayer() ? ped->WarpPedIntoCar(ped->m_pVehicle) : ped->QuitEnteringCar();
+			ped == FindPlayerPed() ? ped->WarpPedIntoCar(ped->m_pVehicle) : ped->QuitEnteringCar();
 		else
 			ped->QuitEnteringCar();
 	}
 	else
 		ped->EnterCar();
 }
-void __fastcall Traffic::PedExitCar(CPed* ped, void* edx)
+void __fastcall Traffic::PedExitCar(CPed* ped)
 {
 	if (ModelInfo::IsRCModel(ped->m_pVehicle->m_nModelIndex))
 	{
@@ -91,14 +94,14 @@ void __fastcall Traffic::PedExitCar(CPed* ped, void* edx)
 }
 void __fastcall Traffic::SetExitCar(CPed* ped, void* edx, CVehicle* vehicle, int value)
 {
-	if (ped->IsPlayer() && ModelInfo::IsRCModel(vehicle->m_nModelIndex))
+	if (ped == FindPlayerPed() && ModelInfo::IsRCModel(vehicle->m_nModelIndex))
 	{
 		ped->SetExitCar(vehicle, 1);
 		return;
 	}
 	ped->SetExitCar(vehicle, value);
 }
-int __fastcall Traffic::FixPedKilledInRCVehicle(CPed* ped, void* edx)
+int __fastcall Traffic::FixPedKilledInRCVehicle(CPed* ped)
 {
 	if (ModelInfo::IsRCModel(ped->m_pVehicle->m_nModelIndex))
 		return 0;
@@ -158,6 +161,9 @@ void* __fastcall Traffic::RandomizeRoadblocks(CVehicle* vehicle, void* edx, int 
 			newModel = model;
 	}
 
+	if (Config::traffic.forcedVehicle >= 130 && Config::traffic.forcedVehicle <= 236)
+		newModel = Config::traffic.forcedVehicle;
+
 	if (ModelInfo::IsBoatModel(newModel))
 		reinterpret_cast<CBoat*>(vehicle)->CBoat::CBoat(newModel, createdBy);
 
@@ -212,6 +218,12 @@ void* __fastcall Traffic::FixTrafficVehicles(CVehicle* vehicle, void* edx, int m
 
 	return vehicle;
 }
+int Traffic::ChoosePoliceVehicle(int model)
+{
+	if (ModelInfo::IsPoliceModel(model))
+		return model;
+	return 156;
+}
 void Traffic::AddPoliceCarOccupants(CVehicle* vehicle)
 {
 	plugin::CallDynGlobal<CVehicle*>(0x419BB0, vehicle);
@@ -219,7 +231,7 @@ void Traffic::AddPoliceCarOccupants(CVehicle* vehicle)
 void Traffic::FixEmptyPoliceCars(CVehicle* vehicle)
 {
 	int origModel = vehicle->m_nModelIndex;
-	vehicle->m_nModelIndex = 156;
+	vehicle->m_nModelIndex = ChoosePoliceVehicle(origModel);
 
 	AddPoliceCarOccupants(vehicle);
 	vehicle->m_nModelIndex = origModel;

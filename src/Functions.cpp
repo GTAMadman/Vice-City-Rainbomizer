@@ -20,7 +20,11 @@ int Functions::RandomNumber(int min, int max)
 	std::uniform_int_distribution random(min, max);
 	return random(rngEngine);
 }
-char* Functions::GetThreadName()
+bool Functions::IsMission(std::string thread)
+{
+	return pActiveScripts->m_szName == thread;
+}
+std::string Functions::GetMissionThread()
 {
 	return pActiveScripts->m_szName;
 }
@@ -36,9 +40,12 @@ bool Functions::DoCoordinatesMatch(int x1, int y1, int z1, int x2, int y2, int z
 }
 bool Functions::IsRampageRunning()
 {
-	if (injector::ReadMemory<short>(0xA10A72) == 1)
+	return injector::ReadMemory<short>(0xA10A72) == 1 ? true : false;
+}
+bool Functions::IsPolicePedModel(int modelID)
+{
+	if (modelID >= 1 && modelID <= 4 || modelID >= 97 && modelID <= 104)
 		return true;
-
 	return false;
 }
 bool Functions::IsModelLoaded(int modelID)
@@ -157,7 +164,4 @@ void Functions::TeleportPlayer(CVector& pos, eLevelName level, int newMission)
 	}
 
 	FindPlayerEntity()->Teleport(pos);
-
-	if (FindPlayerPed() && !FindPlayerVehicle())
-		FindPlayerPed()->SetInitialState();
 }

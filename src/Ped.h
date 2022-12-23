@@ -15,7 +15,7 @@ private:
 	static void ChooseRandomPedToLoad(int modelId, int flags);
 	static void* __fastcall RandomizeGenericPeds(CCivilianPed* ped, void* edx, ePedType type, int model);
 	static void* __fastcall RandomizeAndFixStreetPeds(CCivilianPed* ped, void* edx, ePedType type, int model);
-	static void* __fastcall RandomizeCopPeds(CCopPed* ped, void* edx, eCopType type, int arg1);
+	static void* __fastcall RandomizeCopPeds(CCopPed* ped, void* edx, eCopType type, int viceNum);
 	static bool IsSpecialModel(int model);
 	static int GetRandomGenericPedBasedOnModel(int model, bool ignoreChecks);
 };

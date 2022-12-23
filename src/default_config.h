@@ -7,6 +7,7 @@ const char default_config[]
 
 DisableReplays = false
 ModifyCredits = true
+EnableEasterEggs = true
 
 ###########################################
 # Script Vehicles Randomizer
@@ -18,6 +19,9 @@ OffroadMissions = true # (Trial by Dirt (bikes only), Test Track (cars only), PC
 RCMissions = true # (RC Raider Pickup, RC Bandit Race, RC Baron Race)
 ChopperCheckpoints = true # (Will only be activated by helicopters)
 PizzaBoy = true # (Activate and use any vehicle for pizza boy)
+
+# Force a script vehicle
+ForcedScriptVehicle = 0
 
 ###########################################
 # RC Vehicles Randomizer
@@ -32,6 +36,9 @@ AllowPlayerToDriveRCVehicles = false
 # Parked Vehicles Randomizer
 ParkedVehiclesRandomizer = true
 
+# Force a parked vehicle
+ForcedParkedVehicle = 0
+
 ###########################################
 # Colour Randomizer
 
@@ -40,7 +47,6 @@ RandomizeVehicleColours = true
 
 # HUD
 RandomizeHUDColours = true
-VibrantStaticHUDColours = false
 RainbowHUDColours = false
 
 # Markers
@@ -79,12 +85,18 @@ EnableHelis = true
 EnableDeadDodo = true
 EnableAirTrain = true
 
-# Force a vehicle with its ID, set to an invalid value to disable
-ForcedVehicleID = 0
+# Force a traffic vehicle
+ForcedTrafficVehicle = 0
 
 ###########################################
 # Weapon Randomizer
 WeaponRandomizer = true
+
+# Gives the player random weapons
+RandomizePlayerWeapons = true
+
+# Gives the player random weapons for rampages
+RandomizeRampageWeapons = true
 
 # Randomizes the weapons differently to reduce the chances of peds being given melee weapons
 
@@ -98,6 +110,9 @@ AllowRocketMissile = false
 # Tear gas can sometimes cause lag when used by peds
 AllowTearGas = true
 
+# Force a weapon
+ForcedWeapon = 0
+
 ###########################################
 # Pickups Randomizer
 
@@ -108,6 +123,9 @@ PickupsRandomizer = true
 
 # Randomizes the weapons dropped by dead peds
 RandomizePedWeaponDrops = true
+
+# Randomizes the weapons taken away by metal detectors
+RandomizeMetalDetectorWeapons = true
 
 # Allowed pickup types
 EnableWeapons = true
@@ -125,6 +143,9 @@ MoneyInBriefcase = true
 # Enter your own seed - if empty, the seed will be random
 PickupsCustomSeed = ""
 
+# Force a pickup
+ForcedPickup = 0
+
 ###########################################
 # Player Randomizer
 PlayerRandomizer = true
@@ -134,18 +155,27 @@ IncludeSpecialModels = true
 
 RandomizeOnFades = true
 
+# Force a player model
+ForcedPlayerModel = ""
+
 ###########################################
 # Ped Randomizer
 PedRandomizer = true
 
-# Special models will also be able to become player models
-IncludePlayerModels = true
+# Randomizes special mission peds
+RandomizeSpecialModels = true
 
 # Randomizes generic peds on the streets, in vehicles and some missions
 RandomizeGenericPeds = true
 
 # Randomizes cops on the streets, in vehicles and at roadblocks
 RandomizeCopPeds = true
+
+# Special models will also be able to become player models
+IncludePlayerModels = true
+
+# Force a ped model
+ForcedPedModel = -1
 
 ###########################################
 # Mission Randomizer

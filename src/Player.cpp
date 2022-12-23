@@ -1,6 +1,6 @@
 #include "Player.h"
 
-std::vector <std::string>Player::player_outfits =
+std::vector <std::string> Player::player_outfits =
 {
    "PLAYER", "PLAYER2", "PLAYER3", "PLAYER4", "PLAYER5",
    "PLAYER6", "PLAYER7", "PLAYER8", "PLAYER9","PLAY11", 
@@ -21,30 +21,85 @@ std::vector<std::string> Player::special_models =
    "floozyc", "psycho", "igjezz", "igdick", "igpercy" };
 
 std::vector<std::string> Player::all_outfits;
-void __fastcall Player::RandomizeOutfit(CPed* ped, void* edx, const char* modelName)
+
+auto GetAnimBlendClumpData(RpClump* clump)
+{
+	return *((CAnimBlendClumpData **)(((uint8_t*)clump) + injector::ReadMemory<uint32_t>(0x978798)));
+}
+
+auto RpAnimBlendClumpExtractAssociations(RpClump* clump)
+{
+	auto data = GetAnimBlendClumpData(clump);
+
+	auto ret = data->m_associationsList.link.next;
+	data->m_associationsList.link.next = nullptr;
+	ret->prev = nullptr;
+
+	return (CAnimBlendAssociation*)ret;
+}
+auto RpAnimBlendClumpGiveAssociations(RpClump* clump, CAnimBlendAssociation* association) 
+{
+	if (!association)
+		return;
+
+	auto data = GetAnimBlendClumpData(clump);
+	auto assoc = &data->m_associationsList.link;
+	auto baseAssoc = &data->m_associationsList.link;
+
+	while (assoc->next)
+	{
+		auto next = assoc->next;
+		((CAnimBlendAssociation*)(((uint8_t*)assoc->next) - 4))->~CAnimBlendAssociation();
+		assoc = next;
+	}
+
+	baseAssoc->next = (RwLLLink*)association;
+	((RwLLLink*)association)->prev = baseAssoc;
+}
+void __fastcall Player::RandomizeOutfit(CPed* ped, void* edx, const char* modelName) 
 {
 	std::string newModel = all_outfits[RandomNumber(0, all_outfits.size() - 1)];
+
+	if (Config::player.forcedModel != "")
+		newModel = Config::player.forcedModel;
+
+	association = RpAnimBlendClumpExtractAssociations(ped->m_pRwClump);
 
 	ped->Undress(newModel.c_str());
 	CStreaming::LoadAllRequestedModels(0);
 	strcpy(CModelInfo::GetModelInfo(0)->m_szName, modelName);
 }
+void __fastcall Player::FixAnimAfterModelChange(CPed* ped)
+{
+	ped->Dress();
+	if (association)
+	{
+		RpAnimBlendClumpGiveAssociations(ped->m_pRwClump, association);
+		association = nullptr;
+	}
+}
 void Player::GivePlayerRandomOutfit()
 {
 	std::string newModel = all_outfits[RandomNumber(0, all_outfits.size() - 1)];
 
+	if (Config::player.forcedModel != "")
+		newModel = Config::player.forcedModel;
+
+	CPed* ped = FindPlayerPed();
+	association = RpAnimBlendClumpExtractAssociations(ped->m_pRwClump);
+
 	ChangePlayerModel(newModel.c_str());
 	CStreaming::LoadAllRequestedModels(0);
-	strcpy(CModelInfo::GetModelInfo(0)->m_szName, player_outfits[RandomNumber(0, 
+	strcpy(CModelInfo::GetModelInfo(0)->m_szName, player_outfits[RandomNumber(0,
 		player_outfits.size() - 1)].c_str());
+
+	RpAnimBlendClumpGiveAssociations(ped->m_pRwClump, association);
+	association = nullptr;
 }
 void __fastcall Player::FixTwoBitHit(CRunningScript* script, void* edx, char flag)
 {
-	if (script->m_szName == std::string("serg2") && !flag)
-	{
-		script->UpdateCompareFlag(1);
-		return;
-	}
+	if (IsMission("serg2") && !flag)
+		flag = 1;
 	script->UpdateCompareFlag(flag);
 }
 void Player::RandomizeOutfitOnFade()
@@ -57,6 +112,7 @@ void Player::RandomizeOutfitOnFade()
 		if (FindPlayerPed())
 			GivePlayerRandomOutfit();
 	}
+
 	prevFadeValue = fadeValue;
 	plugin::Call<0x4A7060>();
 }
@@ -71,22 +127,21 @@ void Player::Initialise()
 		if (Config::player.playerOutfits)
 		{
 			for (std::string item : player_outfits)
-			{
 				all_outfits.push_back(item);
-			}
 		}
 		if (Config::player.specialModels)
 		{
 			for (std::string item : special_models)
-			{
 				all_outfits.push_back(item);
-			}
 		}
 		if (all_outfits.size() == 0)
 			return;
 
 		for (int addr : {0x42BDDC, 0x42C1C7, 0x42C3C9, 0x45D35A})
 			plugin::patch::RedirectCall(addr, RandomizeOutfit);
+
+		for (int addr : {0x42BE00, 0x42C1EB, 0x42C3ED, 0x45D3A0})
+			plugin::patch::RedirectCall(addr, FixAnimAfterModelChange);
 
 		plugin::patch::RedirectCall(0x6320BC, FixTwoBitHit);
 

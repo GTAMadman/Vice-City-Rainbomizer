@@ -13,12 +13,14 @@
 #include "Cutscenes.h"
 #include "Missions.h"
 #include "Credits.h"
+#include "General.h"
 #include "Autosave.h"
 
 class Rainbomizer {
 public:
 	Rainbomizer() {
 		Config::Initialise();
+		General::Initialise();
 		Script::Initialise();
 		Remote::Initialise();
 		Parked::Initialise();

@@ -4,12 +4,14 @@
 #include "CModelInfo.h"
 #include "ModelInfo.h"
 #include "CRunningScript.h"
+#include "CTheScripts.h"
 #include "eLevelName.h"
 #include "CGame.h"
 #include "CCamera.h"
 #include "CWorld.h"
 #include "CRubbish.h"
 #include "CTimeCycle.h"
+#include "CStats.h"
 #include <ctime>
 #include <random>
 
@@ -21,7 +23,8 @@ private:
 public:
 	static int RandomNumber(int min, int max);
 	static void LoadModel(int modelID);
-	static char* GetThreadName();
+	static bool IsMission(std::string thread);
+	static std::string GetMissionThread();
 	static std::string GetRainbomizerDir();
 	static bool DoCoordinatesMatch(int x1, int y1, int z1, int x2, int y2, int z2);
 	static bool IsModelLoaded(int modelID);
@@ -29,6 +32,7 @@ public:
 	static int GetNumberOfVehiclesLoaded();
 	static int GetRandomLoadedVehicle();
 	static bool IsRampageRunning();
+	static bool IsPolicePedModel(int modelID);
 	static void PlayAudioForCredits();
 	static bool GetWaterLevel(float fX, float fY, float fZ, float* pfOutLevel, bool bDontCheckZ);
 

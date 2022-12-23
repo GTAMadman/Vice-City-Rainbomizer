@@ -14,7 +14,7 @@ public:
 private:
 	static void* __fastcall RandomizeColours(CRGBA* colour, void* edx, int r, int g, int b, int a);
 	static void* __fastcall RandomizeArmourColours(CRGBA* colour, void* edx, int r, int g, int b, int a);
-	static void __fastcall ChooseVehicleColour(CVehicleModelInfo* thisInfo, void* edx, int* prim, int* sec);
+	static void __fastcall ChooseVehicleColour(CVehicleModelInfo* info, void* edx, int* prim, int* sec);
 	static void __fastcall ScriptVehicleColourRandomizer(CRunningScript* script, void* edx, int* arg0, short count);
 	static void __fastcall RandomizeMarkerColours(C3dMarker* marker);
 	static void RandomizePickupColours(int coronaID, char r, char g, char b, char a, CVector const& posn, float radius,
@@ -26,7 +26,6 @@ private:
 	static int RandomizeColourTable();
 	static int GetColour(int pattern, int rgb);
 	static int GetPickupsColour(int pattern, int rgb);
-	static CRGBA GetVibrantColour();
 	static CRGBA GetRainbowColour(int r, int g, int b);
 	static void HSVtoRGB(int H, double S, double V, int output[3]);
 	struct Pattern

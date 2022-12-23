@@ -1,6 +1,11 @@
 #include "Ped.h"
 
 std::vector<std::string> Ped::ped_models;
+std::unordered_map<int, int> vice_models =
+{
+	{0, 97}, {1, 98}, {2, 99}, {3, 100}, {4, 101}, {5, 102}, {6, 103}, {7, 104},
+};
+
 void Ped::ChooseRandomPedToLoad(int modelId, int flags)
 {
 	int newModel = 0;
@@ -73,10 +78,11 @@ void* __fastcall Ped::RandomizeAndFixStreetPeds(CCivilianPed* ped, void* edx, eP
 	ped->CCivilianPed::CCivilianPed(type, newModel);
 	return ped;
 }
-void* __fastcall Ped::RandomizeCopPeds(CCopPed* ped, void* edx, eCopType type, int arg1)
+void* __fastcall Ped::RandomizeCopPeds(CCopPed* ped, void* edx, eCopType type, int viceNum)
 {
 	eCopType newType;
-	int random = RandomNumber(1, 4);
+	int random = RandomNumber(1, 5);
+	int origViceNum = viceNum;
 
 	switch (random)
 	{
@@ -92,16 +98,27 @@ void* __fastcall Ped::RandomizeCopPeds(CCopPed* ped, void* edx, eCopType type, i
 	case 4:
 		newType = eCopType::COP_TYPE_ARMY;
 		break;
+	case 5:
+		newType = eCopType::COP_TYPE_VICE;
+		break;
+	}
+
+	if (newType == eCopType::COP_TYPE_VICE)
+	{
+		viceNum = RandomNumber(0, 7);
+		random = vice_models.at(viceNum);
 	}
 
 	LoadModel(random);
 
-	if (!IsModelLoaded(random) || type == eCopType::COP_TYPE_SWAT2 
-		|| GetThreadName() == std::string("protec3") && type == eCopType::COP_TYPE_COP)
+	if (!IsModelLoaded(random) || type == eCopType::COP_TYPE_SWAT2
+		|| IsMission("protec3") && type == eCopType::COP_TYPE_COP)
+	{
 		newType = type;
+		viceNum = origViceNum;
+	}
 
-	ped->CCopPed::CCopPed(newType, arg1);
-
+	ped->CCopPed::CCopPed(newType, viceNum);
 	return ped;
 }
 int Ped::GetRandomGenericPedBasedOnModel(int model, bool ignoreChecks)
@@ -113,7 +130,7 @@ int Ped::GetRandomGenericPedBasedOnModel(int model, bool ignoreChecks)
 		// Cannon Fodder & Trojan Voodoo Fix
 		if (model == 85 || model == 86)
 		{
-			if (GetThreadName() == std::string("cuban2") || GetThreadName() == std::string("cuban4"))
+			if (IsMission("cuban2") || IsMission("cuban4"))
 			{
 				while ((newModel = RandomNumber(0, 106)), newModel == 8
 					|| newModel == 83 || newModel == 84);
@@ -122,6 +139,10 @@ int Ped::GetRandomGenericPedBasedOnModel(int model, bool ignoreChecks)
 			}
 		}
 	}
+
+	if (Config::ped.forcedPed >= 0 && Config::ped.forcedPed <= 106)
+		return Config::ped.forcedPed;
+
 	while ((newModel = RandomNumber(0, 106)), newModel == 8);
 	return newModel;
 }
@@ -129,7 +150,6 @@ bool Ped::IsSpecialModel(int model)
 {
 	if (model >= 109 && model <= 129)
 		return true;
-
 	return false;
 }
 void Ped::Initialise()
@@ -159,7 +179,8 @@ void Ped::Initialise()
 				0x53B731, 0x633107})
 				plugin::patch::RedirectCall(addr, RandomizeCopPeds);
 		}
+
+		for (int addr : {0x53B63C, 0x53B8D8, 0x53B9ED})
+			plugin::patch::RedirectCall(addr, RandomizeAndFixStreetPeds);
 	}
-	for (int addr : {0x53B63C, 0x53B8D8, 0x53B9ED})
-		plugin::patch::RedirectCall(addr, RandomizeAndFixStreetPeds);
 }

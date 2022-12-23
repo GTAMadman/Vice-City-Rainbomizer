@@ -603,8 +603,7 @@ void __fastcall Missions::SpawnKaufmanForTaxiMissions(CPlayerInfo* player, void*
 {
 	player->MakePlayerSafe(safe);
 
-	std::string thread = GetThreadName();
-	if (!safe && thread == "taxwar1" || thread == "taxwar2" || thread == "taxwar3")
+	if (!safe && IsMission("taxwar1") || IsMission("taxwar2") || IsMission("taxwar3"))
 	{
 		if (!FindPlayerVehicle())
 		{
@@ -632,9 +631,8 @@ void __fastcall Missions::SpawnKaufmanForTaxiMissions(CPlayerInfo* player, void*
 }
 void* __fastcall Missions::LoadCortezCutsceneArea(CPools* pool, void* edx, int index)
 {
-	std::string thread = GetThreadName();
-	if (thread == "lawyer1" || thread == "generl1" || thread == "col2"
-		|| thread == "generl3" || thread == "col_4")
+	if (IsMission("lawyer1") || IsMission("generl1") || IsMission("col2")
+		|| IsMission("generl3") || IsMission("col_4"))
 		LoadArea(FindPlayerPed()->GetPosition(), eLevelName::LEVEL_BEACH);
 
 	return pool->GetObject(index);
@@ -706,7 +704,7 @@ void Missions::CloseMansionDoors(bool isKYFC)
 }
 void Missions::RemoveDoorsForKYFC(CEntity* entity)
 {
-	if (entity->m_nModelIndex == 2563 && GetThreadName() == std::string("fin_1"))
+	if (entity->m_nModelIndex == 2563 && IsMission("fin_1"))
 	{
 		if (!IsRubOutCompleted())
 			ShouldCloseMansionDoors = true;
@@ -820,8 +818,7 @@ void __fastcall Missions::RemovePedCubes(CPathFind* path, void* edx, float x1, f
 }
 void __fastcall Missions::ReplaceBuildings(CBuilding* building, void* edx, int modelId)
 {
-	if (GetThreadName() == std::string("cuban2") && 
-		building->m_nModelIndex == 1683 && modelId == 1682)
+	if (IsMission("cuban2") && building->m_nModelIndex == 1683 && modelId == 1682)
 		ShouldDestroyFactory = true;
 
 	building->ReplaceWithNewModel(modelId);
@@ -829,7 +826,7 @@ void __fastcall Missions::ReplaceBuildings(CBuilding* building, void* edx, int m
 void __fastcall Missions::ReplaceFactoryWithFixedModels(CCamera* camera)
 {
 	camera->RestoreWithJumpCut();
-	if (GetThreadName() == std::string("cuban2"))
+	if (IsMission("cuban2"))
 		RebuildHaitianFactory();
 }
 void Missions::HandleUnloadedAreasAndDoors(CVector* pos)

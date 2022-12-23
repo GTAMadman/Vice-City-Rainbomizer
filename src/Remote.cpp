@@ -2,15 +2,13 @@
 
 void Remote::GivePlayerRandomRCVehicle(float x, float y, float z, float angle, short modelId)
 {
-	int newModel = 0;
-
 	// Store the coordinates
 	int newX = x;
 	int newY = y;
 	int newZ = z;
 
 	// Check for vehicle pattern
-	newModel = Script::GetIDBasedOnPattern(modelId, x, y, z, "null");
+	int newModel = Script::ProcessScriptVehicleChange(modelId, x, y, z, "null");
 
 	// Change the coordinates
 	newX += Script::CheckPatternForMovePosition(modelId, x, y, z).x;
@@ -18,7 +16,6 @@ void Remote::GivePlayerRandomRCVehicle(float x, float y, float z, float angle, s
 	newZ += Script::CheckPatternForMovePosition(modelId, x, y, z).z;
 
 	LoadModel(newModel);
-
 	if (!IsModelLoaded(newModel))
 		newModel = modelId;
 

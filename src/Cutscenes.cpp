@@ -13,7 +13,7 @@ const char* Cutscenes::GetRandomModel(char* model)
 				return GetRandomElement(i).c_str();
 		}
 	}
-	if (Config::ped.Enabled)
+	if (Config::ped.Enabled && Config::ped.specialModels)
 	{
 		if (IsPedModel(model))
 			return Ped::ped_models[RandomNumber(0, Ped::ped_models.size() - 1)].c_str();

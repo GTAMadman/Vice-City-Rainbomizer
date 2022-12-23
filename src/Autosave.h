@@ -1,11 +1,10 @@
 #pragma once
 #include "plugin.h"
 #include "Config.h"
-#include "Functions.h"
 #include "CRunningScript.h"
 #include "CFileMgr.h"
 
-class Autosave : Functions
+class Autosave
 {
 public:
 	static void Initialise();

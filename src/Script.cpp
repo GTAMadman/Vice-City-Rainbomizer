@@ -22,7 +22,7 @@ void __fastcall Script::ScriptVehicleRandomizer(CRunningScript* script, void* ed
 		newModel = origModel;
 
 	if (newModel != origModel)
-		newModel = GetIDBasedOnPattern(origModel, x, y, z, script->m_szName);
+		newModel = ProcessScriptVehicleChange(origModel, x, y, z, script->m_szName);
 
 	// Attempt to load the vehicle
 	LoadModel(newModel);
@@ -48,100 +48,101 @@ void __fastcall Script::ScriptVehicleRandomizer(CRunningScript* script, void* ed
 	}
 
 	// Added Alloy Wheels Fix here
-	AlloyWheelsFix(newModel, script->m_szName);
+	AlloyWheelsFix(newModel);
 }
 void Script::FixForcedPlayerVehicleType(CRunningScript* script, void* edx, int* arg0, short count)
 {
 	script->CollectParameters(arg0, count);
-	int origModel = CTheScripts::ScriptParams[1].iParam;
+	int& modelId = CTheScripts::ScriptParams[1].iParam;
 
 	// Alloy Wheels of Steal
-	if (script->m_szName == std::string("bike1") && origModel == 193 || origModel == 166)
+	if (IsMission("bike1") && modelId == 193 || modelId == 166)
 	{
 		if (FindPlayerVehicle())
-			CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+			modelId = FindPlayerVehicle()->m_nModelIndex;
 	}
 	// Dirtring
-	if (script->m_szName == std::string("kickst") && origModel == 198)
+	if (IsMission("kickst") && modelId == 198)
 	{
 		if (FindPlayerVehicle())
-			CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+			modelId = FindPlayerVehicle()->m_nModelIndex;
 	}
 	// Kaufman Cab Missions & Checkpoint Charie
-	if (origModel == 216 || origModel == 176)
+	if (modelId == 216 || modelId == 176)
 	{
 		if (FindPlayerVehicle())
-			CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+			modelId = FindPlayerVehicle()->m_nModelIndex;
 	}
 	// Cherry Poppers
-	if (origModel == 153)
+	if (modelId == 153)
 	{
 		if (FindPlayerVehicle())
 		{
 			if (FindPlayerVehicle()->UsesSiren() || FindPlayerVehicle()->m_nModelIndex == 153)
-				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+				modelId = FindPlayerVehicle()->m_nModelIndex;
 		}
 	}
 
 	if (Config::script.offroadEnabled)
 	{
-		if (origModel == 169 || origModel == 191)
+		if (modelId == 169 || modelId == 191)
 			if (FindPlayerVehicle())
-				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+				modelId = FindPlayerVehicle()->m_nModelIndex;
 
 		/* Separated these and only allowed cars/bikes due to an issue with the checkpoints */
 
 		// Test Track
-		if (origModel == 130)
+		if (modelId == 130)
 			if (FindPlayerVehicle())
-				if (ModelInfo::IsCarModel(FindPlayerVehicle()->m_nModelIndex))
-					CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+				if (ModelInfo::IsCarModel(FindPlayerVehicle()->m_nModelIndex)
+					|| ModelInfo::IsHeliModel(FindPlayerVehicle()->m_nModelIndex))
+					modelId = FindPlayerVehicle()->m_nModelIndex;
 
 		// Trial By Dirt
-		if (origModel == 198)
+		if (modelId == 198)
 			if (FindPlayerVehicle())
 				if (CModelInfo::IsBikeModel(FindPlayerVehicle()->m_nModelIndex))
-					CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+					modelId = FindPlayerVehicle()->m_nModelIndex;
 	}
 	if (Config::script.rcEnabled)
 	{
-		if (origModel == 189)
+		if (modelId == 189)
 			if (FindPlayerVehicle())
-				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+				modelId = FindPlayerVehicle()->m_nModelIndex;
 	}
 	if (Config::script.chopperCheckpointEnabled)
 	{
-		if (origModel == 199)
+		if (modelId == 199)
 		{
 			if (FindPlayerVehicle())
 				if (ModelInfo::IsHeliModel(FindPlayerVehicle()->m_nModelIndex))
-					CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+					modelId = FindPlayerVehicle()->m_nModelIndex;
 		}
 	}
 	if (Config::script.pizzaBoyEnabled)
 	{
-		if (origModel == 178)
+		if (modelId == 178)
 			if (FindPlayerVehicle())
-				CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+				modelId = FindPlayerVehicle()->m_nModelIndex;
 	}
 }
 void Script::FixForcedPedVehicleType(CRunningScript* script, void* edx, int* arg0, short count)
 {
 	script->CollectParameters(arg0, count);
-	int origModel = CTheScripts::ScriptParams[1].iParam;
+	int& modelId = CTheScripts::ScriptParams[1].iParam;
 
-	if (script->m_szName == std::string("bike1") && origModel == 166)
-	{
-		CTheScripts::ScriptParams[1].iParam = AlloyWheelsVehicles[RandomNumber(0, AlloyWheelsVehicles.size() - 1)];
-	}
+	if (IsMission("bike1") && modelId == 166)
+		modelId = AlloyWheelsVehicles[RandomNumber(0, AlloyWheelsVehicles.size() - 1)];
 }
 void __fastcall Script::FixTrojanVoodooForcedVehicle(CRunningScript* script, void* edx, int* arg0, short count)
 {
 	script->CollectParameters(arg0, count);
-	if (GetThreadName() == std::string("cuban4") && CTheScripts::ScriptParams[1].iParam == 142)
+	int& modelId = CTheScripts::ScriptParams[1].iParam;
+
+	if (IsMission("cuban4") && modelId == 142)
 	{
 		if (FindPlayerVehicle())
-			CTheScripts::ScriptParams[1].iParam = FindPlayerVehicle()->m_nModelIndex;
+			modelId = FindPlayerVehicle()->m_nModelIndex;
 	}
 }
 void* __fastcall Script::CreateRandomizedCab(CVehicle* vehicle, void* edx, int modelId, bool createdBy)
@@ -173,7 +174,7 @@ void __fastcall Script::FixBombsAwayVan(CRunningScript* script, void* edx, int* 
 	script->CollectParameters(arg0, count);
 
 	/* As it resets the vehicle position, I have to change it here instead */
-	if (script->m_szName == std::string("hait2"))
+	if (IsMission("hait2"))
 	{
 		int x = CTheScripts::ScriptParams[1].fParam;
 		int y = CTheScripts::ScriptParams[2].fParam;
@@ -182,6 +183,18 @@ void __fastcall Script::FixBombsAwayVan(CRunningScript* script, void* edx, int* 
 		if (x == -808 && y == -162 && z == 10)
 			CTheScripts::ScriptParams[2].fParam += 15;
 	}
+}
+void Script::FixBombsAwayBombPosition(CPhysical* phy1, CPhysical* phy2, CVector offset)
+{
+	if (IsMission("hait2") && phy2->m_nModelIndex == 564 && !IsRCModel(phy1->m_nModelIndex))
+	{
+		if (phy1->m_nModelIndex == 155)
+			offset.z -= 1.5f;
+		else
+			offset.z -= 0.5f;
+	}
+
+	CPhysical::PlacePhysicalRelativeToOtherPhysical(phy1, phy2, offset);
 }
 void __fastcall Script::FixFrozenLoadingScreens(CRunningScript* script, void* edx, char flag)
 {
@@ -198,7 +211,7 @@ bool Script::FixWaterLevelCrash(float fX, float fY, float fZ, float* pfOutLevel,
 
 	return GetWaterLevel(fX, fY, fZ, pfOutLevel, bDontCheckZ);
 }
-void* __fastcall Script::OpenBootFix(CAutomobile* vehicle, void* edx)
+void* __fastcall Script::OpenBootFix(CAutomobile* vehicle)
 {
 	if (!vehicle->m_aCarNodes[18])
 		return vehicle;
@@ -206,11 +219,11 @@ void* __fastcall Script::OpenBootFix(CAutomobile* vehicle, void* edx)
 	vehicle->PopBoot();
 	return vehicle;
 }
-void Script::AlloyWheelsFix(int modelID, char* thread)
+void Script::AlloyWheelsFix(int modelID)
 {
 	/* Checking for "Alloy Wheels of Steel" - this will store the bikes
 	that the bikers are driving so they can go through checkpoints */
-	if (thread == std::string("bike1"))
+	if (IsMission("bike1"))
 		AlloyWheelsVehicles.push_back(modelID);
 	else
 		if (AlloyWheelsVehicles.size() > 0)
@@ -267,7 +280,7 @@ void Script::InitialisePatterns()
 	Patterns.push_back(pattern);
 
 	// Taxi - The Job
-	pattern = { .vehicle = {150}, .allowed = {167}, .denied = {217, 227, 228, 189}, .coords = {496, -84, 9}, .doors = {4} };
+	pattern = { .vehicle = {150}, .allowed = {167}, .denied = {217, 227, 228, 189}, .coords = {496, -84, 9}, .door_check = {true} };
 	Patterns.push_back(pattern);
 
 	// Speeder - Stunt Boat Challenge
@@ -275,7 +288,7 @@ void Script::InitialisePatterns()
 	Patterns.push_back(pattern);
 
 	// Vigilante
-	pattern = { .thread = {"copcar"}, .doors = {4} };
+	pattern = { .thread = {"copcar"}, .door_check = {true} };
 	Patterns.push_back(pattern);
 
 	// Firefighter
@@ -283,7 +296,8 @@ void Script::InitialisePatterns()
 	Patterns.push_back(pattern); // Using thread only will return the original vehicle
 
 	// Publicity Tour
-	pattern = { .vehicle = {201}, .allowed = {167}, .denied = {217, 227, 167, 161}, .coords = {-872, 1151, 11}, .doors = {4} };
+	pattern = { .vehicle = {201}, .allowed = {217, 227}, .denied = {167, 161, 218, 155, 177, 199, 189}, 
+	.allowedType = {"heli"}, .coords = {-872, 1151, 11}, .move = {3, 0, 0}, .door_check = {true}, .moveType = {"heli"} };
 	Patterns.push_back(pattern);
 
 	// The Chase - BF Injection
@@ -332,7 +346,7 @@ void Script::InitialisePatterns()
 	Patterns.push_back(pattern);
 
 	// Guardian Angels - Diaz's Admiral on arrival to the deal
-	pattern = { .vehicle = {175}, .allowed = {167, 161}, .coords = {463, -461, 9}, .doors = {4} };
+	pattern = { .vehicle = {175}, .allowed = {167, 161}, .coords = {463, -461, 9}, .door_check = {true} };
 	Patterns.push_back(pattern);
 
 	// Supply & Demand - Squalo
@@ -375,14 +389,21 @@ void Script::InitialisePatterns()
 	pattern = { .vehicle = {199}, .allowedType = {"car", "bike", "heli"}, .coords = {-61, 1019, 9} };
 	Patterns.push_back(pattern);
 
+	// Martha's Mug Shot - Stretch
+	pattern = { .vehicle = {139}, .denied = {178, 215}, .allowedType = {"car", "bike"}, .thread = {"porno3"} };
+	Patterns.push_back(pattern);
+
 	// G-Spotlight - PCJ
 	pattern = { .vehicle = {191}, .allowedType = {"bike"}, .thread = {"porno4"} };
 	Patterns.push_back(pattern);
 }
 /* I've only built the pattern system to work with the necessary patterns for the main game.
    Currently this isn't a great way to do it, but this may be changed in future. */
-int Script::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread)
+int Script::ProcessScriptVehicleChange(int origModel, int x, int y, int z, std::string thread)
 {
+	if (Config::script.forcedVehicle >= 130 && Config::script.forcedVehicle <= 236)
+		return Config::script.forcedVehicle;
+
 	// Scripted Vehicle Patterns
 	for (int i = 0; i < Patterns.size(); i++)
 	{
@@ -424,12 +445,12 @@ int Script::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread
 			}
 			// Coordinate and door check
 			if (DoCoordinatesMatch(Patterns[index].coords[0], Patterns[index].coords[1], Patterns[index].coords[2], x, y, z) &&
-				Patterns[index].doors > 0)
+				Patterns[index].door_check)
 			{
 				vehicles = Patterns[index].allowed;
 				for (int model = 130; model < 237; model++)
 				{
-					if (CVehicleModelInfo::GetMaximumNumberOfPassengersFromNumberOfDoors(model) == Patterns[index].doors - 1)
+					if (CVehicleModelInfo::GetMaximumNumberOfPassengersFromNumberOfDoors(model) > 2)
 						vehicles.push_back(model);
 				}
 			}
@@ -469,11 +490,11 @@ int Script::GetIDBasedOnPattern(int origModel, int x, int y, int z, char* thread
 		// Thread and door check - used for Vigilante and Firefighter
 		if (Patterns[index].thread == thread)
 		{
-			if (Patterns[index].doors > 0)
+			if (Patterns[index].door_check)
 			{
 				for (int model = 130; model < 237; model++)
 				{
-					if (CVehicleModelInfo::GetMaximumNumberOfPassengersFromNumberOfDoors(model) == Patterns[index].doors - 1)
+					if (CVehicleModelInfo::GetMaximumNumberOfPassengersFromNumberOfDoors(model) > 2)
 						vehicles.push_back(model);
 				}
 				if (vehicles.size() > 0)
@@ -652,6 +673,7 @@ void Script::Initialise()
 		plugin::patch::RedirectCall(0x445202, FixForcedPedVehicleType);
 		plugin::patch::RedirectCall(0x4536A0, FixTrojanVoodooForcedVehicle);
 		plugin::patch::RedirectCall(0x44AA20, FixBombsAwayVan);
+		plugin::patch::RedirectCall(0x45D435, FixBombsAwayBombPosition);
 		plugin::patch::RedirectCall(0x6316CE, OpenBootFix);
 		plugin::patch::SetChar(0x59EF9A, 1); // Unlock police vehicle doors
 

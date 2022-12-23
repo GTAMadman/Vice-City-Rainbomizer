@@ -60,18 +60,8 @@ void* __fastcall Colours::RandomizeColours(CRGBA* colour, void* edx, int r, int 
 		int pattern = r + g + b;
 		if (GetColour(pattern, 0) == 0)
 		{
-			if (Config::colours.vibrantOnlyEnabled)
-			{
-				CRGBA vibrantColour = GetVibrantColour();
-
-				Pattern col = { pattern, {vibrantColour.r, vibrantColour.g, vibrantColour.b} };
-				Patterns.push_back(col);
-			}
-			else
-			{
-				Pattern col = { pattern, {RandomNumber(1, 255), RandomNumber(1, 255), RandomNumber(1, 255)} };
-				Patterns.push_back(col);
-			}
+			Pattern col = { pattern, {RandomNumber(1, 255), RandomNumber(1, 255), RandomNumber(1, 255)} };
+			Patterns.push_back(col);
 		}
 
 		if (r != g && g != b)
@@ -105,25 +95,15 @@ void* __fastcall Colours::RandomizeArmourColours(CRGBA* colour, void* edx, int r
 	else
 	{
 		int pattern = r + b + g;
-		if (Config::colours.vibrantOnlyEnabled)
-		{
-			CRGBA vibrantColour = GetVibrantColour();
+		Pattern col = { r + g + b, {RandomNumber(1, 255), RandomNumber(1, 255), RandomNumber(1, 255)} };
+		Patterns.push_back(col);
 
-			Pattern col = { r + g + b, {vibrantColour.r, vibrantColour.g, vibrantColour.b} };
-			Patterns.push_back(col);
-		}
-		else
-		{
-			Pattern col = { r + g + b, {RandomNumber(1, 255), RandomNumber(1, 255), RandomNumber(1, 255)} };
-			Patterns.push_back(col);
-		}
 		colour->r = GetColour(pattern, 0);
 		colour->g = GetColour(pattern, 1);
 		colour->b = GetColour(pattern, 2);
 		colour->a = a;
-
-		return colour;
 	}
+	return colour;
 }
 void __fastcall Colours::RandomizeMarkerColours(C3dMarker* marker)
 {
@@ -236,31 +216,6 @@ void Colours::RandomizeExplosionColours(int coronaID, char r, char g, char b, ch
 	CCoronas::RegisterCorona(coronaID, colour.r, colour.g, colour.b, a, posn, radius, farClip, texture,
 		flare, refl, arg11, arg12, normalAngle, arg14, arg15);
 }
-CRGBA Colours::GetVibrantColour()
-{
-	CRGBA colour;
-
-	int colours[3] = { 0, 0, 0 };
-	int values[3] = { 255, 0, RandomNumber(1, 255) };
-	std::vector<int> vec;
-
-	for (int i = 0; i < 3; i++)
-		vec.push_back(values[i]);
-
-	for (int i = 0; i < 3; i++)
-	{
-		int rng = RandomNumber(0, vec.size() - 1);
-		colours[i] = vec[rng];
-		vec.erase(vec.begin() + rng);
-	}
-
-	colour.r = colours[0];
-	colour.g = colours[1];
-	colour.b = colours[2];
-	colour.a = 255;
-
-	return colour;
-}
 CRGBA Colours::GetRainbowColour(int r, int g, int b)
 {
 	CRGBA colour;
@@ -336,7 +291,7 @@ int Colours::RandomizeColourTable()
 	}
 	return 0;
 }
-void __fastcall Colours::ChooseVehicleColour(CVehicleModelInfo* thisInfo, void* edx, int* prim, int* sec)
+void __fastcall Colours::ChooseVehicleColour(CVehicleModelInfo* info, void* edx, int* prim, int* sec)
 {
 	*prim = RandomNumber(0, 94);
 	*sec = RandomNumber(0, 94);

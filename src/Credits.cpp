@@ -13,9 +13,8 @@ void Credits::PrintGroup(wchar_t* title, std::vector<wchar_t*> list, int* positi
 	PrintCredits(1.0, 1.0, title, position, offset);
 
 	for (auto item : list)
-	{
 		PrintCredits(0.9, 0.9, item, position, offset);
-	}
+
 	*position += 37.5;
 }
 void Credits::ModifyCredits(float x, float y, wchar_t* text, int* position, float offset)

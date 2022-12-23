@@ -9,6 +9,7 @@ public:
 	static bool IsBoatModel(int modelID);
 	static bool IsRCModel(int modelID);
 	static bool IsHeliModel(int modelID);
+	static bool IsPoliceModel(int modelID);
 	static bool IsEmergencyVehicle(int modelID);
 	static bool IsMiscVehicle(int modelID);
 	static std::string CheckVehicleModel(int modelID);

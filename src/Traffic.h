@@ -29,10 +29,11 @@ private:
 	static void* __fastcall RandomizeRoadblocks(CVehicle* vehicle, void* edx, int model, char createdBy);
 	static void FixEmptyPoliceCars(CVehicle* vehicle);
 	static void FixBoatSpawns(CPhysical* entity);
-	static void __fastcall PedExitCar(CPed* ped, void* edx);
-	static void __fastcall PedEnterCar(CPed* ped, void* edx);
+	static void __fastcall PedExitCar(CPed* ped);
+	static void __fastcall PedEnterCar(CPed* ped);
 	static void __fastcall SetExitCar(CPed* ped, void* edx, CVehicle* vehicle, int value);
-	static int __fastcall FixPedKilledInRCVehicle(CPed* ped, void* edx);
+	static int __fastcall FixPedKilledInRCVehicle(CPed* ped);
+	static int ChoosePoliceVehicle(int model);
 	static bool FixDeadPedsInFrontOfRCVehicles(int modelID);
 	static bool IsVehicleAllowed(int model);
 
