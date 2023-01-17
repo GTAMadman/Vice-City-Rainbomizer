@@ -126,6 +126,7 @@ const char* tables[] = { "AMBULAE", "ASSIN1", "ASSIN2", "ASSIN3", "ASSIN4", "ASS
 std::map<std::string, wchar_t*> tokens =
 {
 	{"TAXW1_5", L"~g~You need to be in a vehicle!"},
+	{"NOTAXI", L"~g~You need a vehicle to activate this mission."},
 	{"CUB4_26", L"~g~Take Pepe, head North into Little Haiti and steal a vehicle."}
 };
 

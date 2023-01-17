@@ -111,6 +111,7 @@ private:
 	static bool IsFinalAssetMission(int mission);
 	static eInterior GetInteriorBasedOnMissionStart(int mission);
 	static eInterior GetInteriorBasedOnMissionEnd(int mission);
+	static void SetInteriorGlobalVars(int mansion, int mall, int malibu, int shooting_range);
 	static void FixCapTheCollector();
 	static void ResetAssets();
 	static void FixTaxiDestinations(float x, float y, float z, float angle);

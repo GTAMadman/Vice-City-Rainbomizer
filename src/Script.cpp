@@ -396,6 +396,27 @@ void Script::InitialisePatterns()
 	// G-Spotlight - PCJ
 	pattern = { .vehicle = {191}, .allowedType = {"bike"}, .thread = {"porno4"} };
 	Patterns.push_back(pattern);
+
+	// Psycho Killer
+	pattern = { .vehicle = {201}, .allowedType = {"car", "bike", "heli"}, .thread = {"rockb2"} };
+	Patterns.push_back(pattern);
+
+	// Gun Runner
+	pattern = { .vehicle = {200}, .allowedType = {"car", "bike", "heli"}, .thread = {"phil1"} };
+	Patterns.push_back(pattern);
+
+	// Boomshine Saigon
+	pattern = { .vehicle = {200}, .allowedType = {"car", "bike", "heli"}, .move = {4, 0, 0},
+	.thread = {"phil2"}, .moveType = {"heli"} };
+	Patterns.push_back(pattern);
+
+	// Check Out at the Check In - Maverick
+	pattern = { .vehicle = {217}, .allowedType = {"heli", "car", "bike"}, .thread = {"assin4"} };
+	Patterns.push_back(pattern);
+
+	// Loose Ends - Maverick
+	pattern = { .vehicle = {217}, .allowedType = {"heli", "car", "bike"}, .thread = {"assin5"} };
+	Patterns.push_back(pattern);
 }
 /* I've only built the pattern system to work with the necessary patterns for the main game.
    Currently this isn't a great way to do it, but this may be changed in future. */

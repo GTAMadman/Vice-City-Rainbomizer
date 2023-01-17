@@ -510,10 +510,21 @@ bool Missions::IsFinalAssetMission(int mission)
 		|| mission == 33 || mission == 35
 		|| mission == 52 || mission == 74;
 }
+void Missions::SetInteriorGlobalVars(int mansion, int mall, int malibu, int shooting_range)
+{
+	GetGlobalVariable(991) = mansion;
+	GetGlobalVariable(1003) = mall;
+	GetGlobalVariable(986) = malibu;
+	GetGlobalVariable(988) = shooting_range;
+}
 Functions::eInterior Missions::GetInteriorBasedOnMissionStart(int mission)
 {
 	if (mission == 51)
+	{
+		SetInteriorGlobalVars(1, 0, 0, 0);
 		return eInterior::INTERIOR_MANSION;
+	}
+	SetInteriorGlobalVars(0, 0, 0, 0);
 	return eInterior::INTERIOR_OUTSIDE;
 }
 Functions::eInterior Missions::GetInteriorBasedOnMissionEnd(int mission)
@@ -521,12 +532,16 @@ Functions::eInterior Missions::GetInteriorBasedOnMissionEnd(int mission)
 	switch (mission)
 	{
 	case 16:
+		SetInteriorGlobalVars(1, 0, 0, 0);
 		return eInterior::INTERIOR_MANSION;
 	case 22:
+		SetInteriorGlobalVars(0, 0, 0, 1);
 		return eInterior::INTERIOR_SHOOTING_RANGE;
 	case 31:
+		SetInteriorGlobalVars(0, 1, 0, 0);
 		return eInterior::INTERIOR_MALL;
 	}
+	SetInteriorGlobalVars(0, 0, 0, 0);
 	return eInterior::INTERIOR_OUTSIDE;
 }
 void Missions::FixCapTheCollector()

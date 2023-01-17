@@ -191,10 +191,6 @@ void Weapons::InitialiseWeaponPatterns()
 	22, 23, 24, 25, 26, 32, 33}, .thread = {"baron4"} };
 	Patterns.push_back(pattern);
 
-	// Martha's Mug Shot - Camera
-	pattern = { .weapon = {36}, .allowed = {36}, .thread = {"porno3"} };
-	Patterns.push_back(pattern);
-
 	// Dirty Lickin's - Sniper
 	pattern = { .weapon = {28}, .allowed = {28, 29, 18, 30, 25, 26, 27, 32, 33}, .thread = {"hait3"} };
 	Patterns.push_back(pattern);
@@ -312,6 +308,10 @@ int Weapons::ProcessWeaponChange(int weapon, bool turret_mode, bool is_rampage, 
 {
 	if (Config::weapons.forcedWeapon >= 1 && Config::weapons.forcedWeapon <= 36)
 		return Config::weapons.forcedWeapon;
+
+	// Always return camera as itself
+	if (weapon == 36)
+		return weapon;
 
 	for (int i = 0; i < Patterns.size(); i++)
 	{

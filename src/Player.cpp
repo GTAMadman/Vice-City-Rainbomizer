@@ -102,6 +102,16 @@ void __fastcall Player::FixTwoBitHit(CRunningScript* script, void* edx, char fla
 		flag = 1;
 	script->UpdateCompareFlag(flag);
 }
+void __fastcall Player::FixPlayerPositionAtStartOfMissions(CRunningScript* script, void* edx, int* arg0, short count)
+{
+	script->CollectParameters(arg0, count);
+
+	float& posZ = CTheScripts::ScriptParams[3].fParam;
+	if (IsMission("protec1") || IsMission("protec2") && posZ == 16.2f)
+		posZ = 17.2f;
+	if (IsMission("protec3") && posZ == 11.7f)
+		posZ = 12.7f;
+}
 void Player::RandomizeOutfitOnFade()
 {
 	static int prevFadeValue = -1;
@@ -144,6 +154,7 @@ void Player::Initialise()
 			plugin::patch::RedirectCall(addr, FixAnimAfterModelChange);
 
 		plugin::patch::RedirectCall(0x6320BC, FixTwoBitHit);
+		plugin::patch::RedirectCall(0x44EA27, FixPlayerPositionAtStartOfMissions);
 
 		if (Config::player.randomizeOnFades)
 			plugin::patch::RedirectCall(0x4A6133, RandomizeOutfitOnFade);
