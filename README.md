@@ -1,6 +1,6 @@
 Rainbomizer is a randomizer for Grand Theft Auto Vice City.
 
-<img src="https://cdn.discordapp.com/attachments/651869008618061837/678350944890781739/r1outink.png">
+<img src="https://i.ibb.co/Nyp4SHJ/Rainbomizer.webp">
 Logo created by Catmare
 
 ## Features
@@ -25,7 +25,7 @@ Logo created by Catmare
 
 Other versions of the game *will not* work and will most likely cause a crash.
 
-Check this link for a v1.0 EXE - https://cdn.discordapp.com/attachments/681997098153148433/682719019052040229/gta-vc.exe
+Check this link for a v1.0 EXE - https://www.mediafire.com/file/m005xjkmdmpbinp/gta-vc.exe/file
 
 ## Configuration
 
