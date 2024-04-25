@@ -25,7 +25,7 @@ Logo created by Catmare
 
 Other versions of the game *will not* work and will most likely cause a crash.
 
-Check this link for a v1.0 EXE - https://www.mediafire.com/file/qx1o23tjhxds1bm/gta-vc.rar/file
+Check this link for a v1.0 EXE - https://mega.nz/file/4OF32biR#vIbUiWg9IOpAxbqZHxRlAqlai3KXxn2KWvLg2dqDFUk
 
 ## Configuration
 
